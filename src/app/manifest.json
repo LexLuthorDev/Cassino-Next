@@ -1,12 +1,12 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Zonebets",
+  "short_name": "zone",
   "icons": [
     {
       "src": "/icon_144.png",
       "sizes": "144x144",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/web-app-manifest-512x512.png",
