@@ -1,47 +1,50 @@
 'use server';
- 
+
 import webpush from 'web-push';
- 
+import {
+  saveSubscription,
+  deleteSubscription,
+  getAllSubscriptions,
+} from '../utils/db'; // ajuste o caminho conforme necessário
+
 webpush.setVapidDetails(
   'mailto:lexluthordevfull@gmail.com',
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY
 );
- 
-let subscription= null;
- 
+
 export async function subscribeUser(sub) {
-  subscription = sub;
-  // In a production environment, you would want to store the subscription in a database
-  // For example: await db.subscriptions.create({ data: sub })
+  await saveSubscription(sub);
   return { success: true };
 }
- 
+
 export async function unsubscribeUser() {
-  subscription = null;
-  // In a production environment, you would want to remove the subscription from the database
-  // For example: await db.subscriptions.delete({ where: { ... } })
+  // Neste caso, não temos o endpoint na chamada, então não fazemos nada
+  await deleteSubscription();
   return { success: true };
 }
- 
+
 export async function sendNotification(message) {
-  if (!subscription) {
-    throw new Error('No subscription available');
+  const subs = await getAllSubscriptions();
+
+  const results = [];
+
+  for (const sub of subs) {
+    try {
+      await webpush.sendNotification(
+        sub,
+        JSON.stringify({
+          title: 'Test Notification',
+          body: message,
+          icon: '/icon1.png',
+          badge: '/icon1.png',
+        })
+      );
+      results.push({ endpoint: sub.endpoint, status: 'ok' });
+    } catch (error) {
+      results.push({ endpoint: sub.endpoint, status: 'fail' });
+    }
   }
- 
-  try {
-    await webpush.sendNotification(
-      subscription,
-      JSON.stringify({
-        title: 'Test Notification',
-        body: message,
-        icon: '/icon1.png',
-        badge: '/icon1.png',
-      })
-    );
-    return { success: true };
-  } catch (error) {
-    console.error('Error sending push notification:', error);
-    return { success: false, error: 'Failed to send notification' };
-  }
+
+  return { success: true, results };
 }
