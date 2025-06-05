@@ -1,0 +1,22 @@
+{
+  "name": "Zonebets",
+  "short_name": "zone",
+  "start_url": "/",
+  "theme_color": "#000000",
+  "background_color": "#f9f9f9",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "manifest-icons/logo-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "manifest-icons/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
