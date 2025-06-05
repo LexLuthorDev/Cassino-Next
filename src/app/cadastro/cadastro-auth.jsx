@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { createJogador } from "../../api/jogador";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import SplashScreen from "@/components/SplashScreen";
 
 
