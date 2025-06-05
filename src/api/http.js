@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: "https://925c-161-22-59-99.ngrok-free.app/api", // ou IP da API
+  baseURL: "https://1584-161-22-59-99.ngrok-free.app/api", // ou IP da API
   headers: {
     "Content-Type": "application/json",
   },

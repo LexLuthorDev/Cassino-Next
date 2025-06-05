@@ -106,7 +106,7 @@ export default function DoubleGame({ token_jogador }) {
 
   useEffect(() => {
     // Create socket inside effect
-    socketRef.current = io("https://925c-161-22-59-99.ngrok-free.app", {
+    socketRef.current = io("https://1584-161-22-59-99.ngrok-free.app", {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 10,
