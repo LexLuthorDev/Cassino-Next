@@ -14,17 +14,33 @@ webpush.setVapidDetails(
 );
 
 export async function subscribeUser(sub) {
-  await saveSubscription(sub);
-  return { success: true };
+  try {
+    console.log("Recebido em subscribeUser:", sub);
+
+    if (!sub || !sub.endpoint) throw new Error("Inscrição inválida");
+
+    await saveSubscription(sub);
+    return { success: true };
+  } catch (err) {
+    console.error("Erro em subscribeUser:", err);
+    throw err;
+  }
 }
 
 export async function unsubscribeUser(endpoint) {
-  if (!endpoint) {
-    return { success: false, error: 'No endpoint provided' };
-  }
+  try {
+    console.log("Recebido em unsubscribeUser:", endpoint);
 
-  await deleteSubscription(endpoint);
-  return { success: true };
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error("Endpoint inválido");
+    }
+
+    await deleteSubscription(endpoint);
+    return { success: true };
+  } catch (err) {
+    console.error("Erro em unsubscribeUser:", err);
+    throw err;
+  }
 }
 
 export async function sendNotification(message) {

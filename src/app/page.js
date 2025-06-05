@@ -39,23 +39,33 @@ function PushNotificationManager() {
   }
 
   async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready;
-    const VAPID_PUBLIC_KEY =
-      "BA3P2KNoc2WMrd0L1ZRjL2pAdAd-hLA5gWqlvKcKVhPBeMBoR1egxxfix0XgckPCcylOkXWQJOoIxydYpCvFJLk";
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const VAPID_PUBLIC_KEY =
+        "BA3P2KNoc2WMrd0L1ZRjL2pAdAd-hLA5gWqlvKcKVhPBeMBoR1egxxfix0XgckPCcylOkXWQJOoIxydYpCvFJLk";
 
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-    });
-    setSubscription(sub);
-    await subscribeUser(sub.toJSON());
+      const sub = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+      setSubscription(sub);
+      await subscribeUser(sub.toJSON());
+    } catch (err) {
+      console.error("Erro ao inscrever:", err);
+      alert("Erro ao inscrever nas notificações.");
+    }
   }
 
   async function unsubscribeFromPush() {
-    if (subscription) {
-      await subscription.unsubscribe();
-      await unsubscribeUser(subscription.endpoint); // ✅ agora envia o endpoint
-      setSubscription(null);
+    try {
+      if (subscription) {
+        await subscription.unsubscribe();
+        await unsubscribeUser(subscription.endpoint);
+        setSubscription(null);
+      }
+    } catch (err) {
+      console.error("Erro ao desinscrever:", err);
+      alert("Erro ao desinscrever das notificações.");
     }
   }
 
