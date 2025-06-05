@@ -1,46 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-function InstallPrompt() {
-  const [hasMounted, setHasMounted] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-
-    const isIOSDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isAppStandalone = window.matchMedia("(display-mode: standalone)").matches;
-
-    setIsIOS(isIOSDevice);
-    setIsStandalone(isAppStandalone);
-  }, []);
-
-  if (!hasMounted || isStandalone) return null;
-
-  return (
-    <div>
-      <h3>Install App</h3>
-      <button>Add to Home Screen</button>
-      {isIOS && (
-        <p>
-          To install this app on your iOS device, tap the share button
-          <span role="img" aria-label="share icon"> ⎋ </span>
-          and then "Add to Home Screen"
-          <span role="img" aria-label="plus icon"> ➕ </span>
-          .
-        </p>
-      )}
-    </div>
-  );
-}
+import { useTheme } from "@/context/ThemeContext";
+import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
+import PwaInstallBanner from "@/components/PwaInstallBanner"; // ✅ novo banner
+import Header from "@/components/home/Header";
 
 export default function Page() {
+  const theme = useTheme();
+  const { showInstallModal, triggerInstall, setShowInstallModal } =
+    usePwaInstallPrompt();
   return (
-    <div>
-      <InstallPrompt />
+    <div
+      style={{ backgroundColor: theme?.cor_fundo || "#18181B" }}
+      className="min-h-screen flex flex-col text-white"
+    >
+      {/* BANNER FIXO ACIMA DO HEADER */}
+      <PwaInstallBanner
+        visible={showInstallModal}
+        onInstall={triggerInstall}
+        onClose={() => setShowInstallModal(false)}
+      />
+      {/* Cabeçalho */}
+      <Header offsetTop={showInstallModal ? 47 : 0} />
     </div>
   );
 }
