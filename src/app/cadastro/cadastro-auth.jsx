@@ -28,8 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { createJogador } from "../../api/jogador";
-import { useNavigate } from "react-router-dom";
-
+import { useRouter } from "next/router";
 import SplashScreen from "@/components/SplashScreen";
 
 
@@ -152,7 +151,7 @@ function ApiFeedback({
 }
 
 export default function CadastroAuth() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const [nomeRegister, setNomeRegister] = useState("");
@@ -196,7 +195,7 @@ export default function CadastroAuth() {
           setWhatsappRegister("");
           setSenhaRegister("");
           // navegar para login
-          navigate("/login");
+          router.push("/login");
         }, 3000);
       }
     } catch (err) {
@@ -221,7 +220,7 @@ export default function CadastroAuth() {
       <div className="flex items-center justify-between w-full px-2 py-2 ">
         <div className="flex items-center">
           <button
-            onClick={() => navigate("/ajuda")}
+            onClick={() => router.push("/ajuda")}
             className="flex items-center gap-1 text-white bg-gray-800 px-3 py-2 rounded-md"
           >
             <span className="font-bold bg-green-500 rounded-sm p-2">
@@ -233,7 +232,7 @@ export default function CadastroAuth() {
 
         <div className="flex items-center">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => router.push("/login")}
             className="flex items-center text-green-500 bg-gray-800 px-2 py-3 rounded-md"
           >
             Faça login aqui{" "}
