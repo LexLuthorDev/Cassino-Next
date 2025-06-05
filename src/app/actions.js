@@ -18,9 +18,12 @@ export async function subscribeUser(sub) {
   return { success: true };
 }
 
-export async function unsubscribeUser() {
-  // Neste caso, não temos o endpoint na chamada, então não fazemos nada
-  await deleteSubscription();
+export async function unsubscribeUser(endpoint) {
+  if (!endpoint) {
+    return { success: false, error: 'No endpoint provided' };
+  }
+
+  await deleteSubscription(endpoint);
   return { success: true };
 }
 
