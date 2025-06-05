@@ -13,8 +13,7 @@ import {
   Bitcoin,
 } from "lucide-react";
 import confetti from "canvas-confetti";
-import { useNavigate } from "react-router-dom"; // ✅ correto para React Router DOM
-
+import { useRouter } from "next/navigation";
 // Função para exibir os confetes
 const showConfetti = () => {
   const count = 200;
@@ -87,7 +86,7 @@ export default function DoubleGame({ token_jogador }) {
   const [saldoUsuario, setSaldoUsuario] = useState(100);
   const [isBettingDisabled, setIsBettingDisabled] = useState(false);
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Carregar os efeitos sonoros
   const winSound = useRef(new Audio("/sounds/sound-vitoria.mp3"));
@@ -107,7 +106,7 @@ export default function DoubleGame({ token_jogador }) {
 
   useEffect(() => {
     // Create socket inside effect
-    socketRef.current = io("https://162f-161-22-59-57.ngrok-free.app", {
+    socketRef.current = io("https://925c-161-22-59-99.ngrok-free.app", {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 10,
@@ -297,7 +296,7 @@ export default function DoubleGame({ token_jogador }) {
           {/* Home navigation button */}
           <div className="max-w-full w-full mx-auto flex justify-between items-center">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => router.push("/")}
               className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Home className="h-5 w-5" />

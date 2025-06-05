@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
+import { useRouter } from "next/navigation";
 
 function hexToRgba(hex, alpha = 1) {
   const cleanHex = hex.replace("#", "");
@@ -23,8 +23,7 @@ function CarrosselJogos({ jogos }) {
 
   const containerRef = useRef(null);
 
-  const navigate = useNavigate();
-
+  const router = useRouter();
   // Ajusta o número de itens visíveis com base no tamanho da tela
   useEffect(() => {
     function atualizarTamanho() {
@@ -215,7 +214,7 @@ function CarrosselJogos({ jogos }) {
                       ))}
                   </div>
                   <button
-                    onClick={() => navigate(`/games/${jogo.nome}`)}
+                    onClick={() => router.push(`/games/${jogo.nome}`)}
                     style={{
                       backgroundColor: theme?.cor_primaria || "#22c55e",
                       color: theme?.cor_texto_primaria || "#fff",
