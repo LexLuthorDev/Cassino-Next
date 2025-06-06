@@ -30,10 +30,36 @@ const defaultSliderData = [
 export default function MaioresGanhadoresSection() {
   const { configCassino, loadingConfigCassino } = useConfigCassino();
   const tema = configCassino?.tema;
+  const cassino = configCassino?.cassino;
+
+  const metodoTrofeuCassino = cassino?.MetodosCassinos?.find(
+    (metodo) => metodo.nome === "trofeu"
+  );
+  const configMetodoTrofeuCassino = metodoTrofeuCassino?.configTrofeu;
+
   const scrollRef = useRef(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  const sliderItems = [...defaultSliderData, ...defaultSliderData]; // duplicado
+  // Trata os dados recebidos dinamicamente
+  let parsedDados = [];
+
+  try {
+    let raw = configMetodoTrofeuCassino?.dados;
+    if (typeof raw === "string") {
+      raw = raw.trim();
+      parsedDados = JSON.parse(raw);
+    } else if (Array.isArray(raw)) {
+      parsedDados = raw;
+    } else if (typeof raw === "object" && raw !== null) {
+      parsedDados = Object.values(raw);
+    }
+  } catch (e) {
+    console.warn("Erro ao interpretar dados dos ganhadores:", e);
+    parsedDados = [];
+  }
+
+  // Fallback para dados mockados
+  const sliderItems = [...(parsedDados.length > 0 ? parsedDados : defaultSliderData), ...(parsedDados.length > 0 ? parsedDados : defaultSliderData)];
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -56,10 +82,6 @@ export default function MaioresGanhadoresSection() {
 
     return () => clearInterval(autoScroll);
   }, [isInteracting]);
-
-  // Mobile touch - ativa/desativa auto scroll
-  const handleTouchStart = () => setIsInteracting(true);
-  const handleTouchEnd = () => setIsInteracting(false);
 
   if (loadingConfigCassino || !configCassino) return null;
 
@@ -87,8 +109,8 @@ export default function MaioresGanhadoresSection() {
 
       <div
         ref={scrollRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={() => setIsInteracting(true)}
+        onTouchEnd={() => setIsInteracting(false)}
         className="flex overflow-x-auto gap-3 pb-0 scrollbar-hide snap-x snap-mandatory"
       >
         <div className="flex gap-3 min-w-max">
