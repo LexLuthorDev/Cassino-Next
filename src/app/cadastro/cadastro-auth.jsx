@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { createJogador } from "../../api/jogador";
 import { useRouter } from "next/navigation";
 import SplashScreen from "@/components/SplashScreen";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 
 
 // Hook para gerenciar feedback de API
@@ -151,6 +152,8 @@ function ApiFeedback({
 }
 
 export default function CadastroAuth() {
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -214,6 +217,9 @@ export default function CadastroAuth() {
       return <SplashScreen onFinish={() => setShowSplash(false)} />;
     }
 
+    // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 to-black">
       {/* Header */}
@@ -221,9 +227,10 @@ export default function CadastroAuth() {
         <div className="flex items-center">
           <button
             onClick={() => router.push("/ajuda")}
-            className="flex items-center gap-1 text-white bg-gray-800 px-3 py-2 rounded-md"
+            style={{ color: tema?.cor_texto_primaria }}
+            className="flex items-center gap-1 bg-gray-800 px-3 py-2 rounded-md"
           >
-            <span className="font-bold bg-green-500 rounded-sm p-2">
+            <span style={{ backgroundColor: tema?.cor_primaria }} className="font-bold  rounded-sm p-2">
               <Headset className="h-4 w-4" />
             </span>
             Precisa de ajuda?
@@ -233,7 +240,8 @@ export default function CadastroAuth() {
         <div className="flex items-center">
           <button
             onClick={() => router.push("/login")}
-            className="flex items-center text-green-500 bg-gray-800 px-2 py-3 rounded-md"
+            style={{ color: tema?.cor_primaria }}
+            className="flex items-center  bg-gray-800 px-2 py-3 rounded-md"
           >
             Faça login aqui{" "}
             <span className="font-bold bg-transparent rounded-sm px-1 py-0 flex justify-center items-center mt-1">
@@ -244,19 +252,20 @@ export default function CadastroAuth() {
       </div>
       <div className="flex items-center justify-between w-full px-2 py-2 ">
         <img
-          src="/assets/banner_cadastro.png"
+          //src="/assets/banner_cadastro.png"
+          src="https://imagedelivery.net/BgH9d8bzsn4n0yijn4h7IQ/793a02ca-f49c-4134-4288-a5db508fda00/w=600?quality=95&format=auto"
           alt="Banner do Cassino"
           className="w-full h-full object-contain"
           loading="eager"
         />
       </div>
       <div className="flex items-center justify-center w-full px-2 py-2 gap-2">
-        <span className="font-bold bg-green-500 rounded-sm p-2 text-white">
+        <span style={{ backgroundColor: tema?.cor_primaria, color: tema?.cor_texto_primaria }} className="font-bold  rounded-sm p-2 ">
           <Laugh className="h-4 w-4" />
         </span>
-        <p className="text-white text-center">
+        <p style={{ color: tema?.cor_texto_primaria }} className=" text-center">
           Realize seu Cadastro para{" "}
-          <span className="text-green-500 font-semibold">jogar!</span>
+          <span style={{ color: tema?.cor_primaria }} className=" font-semibold">jogar!</span>
         </p>
       </div>
       {/* Formulario cadastro */}
@@ -266,11 +275,11 @@ export default function CadastroAuth() {
       >
         <CardContent className="w-full p-0">
           <div className="w-full space-y-2">
-            <Label htmlFor="name" className="text-gray-300">
+            <Label htmlFor="name" style={{ color: tema?.cor_texto_primaria }}>
               Nome
             </Label>
             <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <User style={{ color: tema?.cor_texto_primaria }} className="absolute left-3 top-3 h-4 w-4" />
               <Input
                 id="name"
                 placeholder="Digite seu nome aqui"
@@ -278,21 +287,22 @@ export default function CadastroAuth() {
                 onChange={(e) => setNomeRegister(e.target.value)}
                 required
                 disabled={registerFeedback.isLoading}
-                className="pl-10 bg-gray-800 border-green-500 text-white placeholder:text-white focus:bg-gray-800"
+                style={{ borderColor: tema?.cor_primaria , color: tema?.cor_texto_primaria }}
+                className="pl-10 bg-gray-800  placeholder:text-white focus:bg-gray-800"
               />
             </div>
           </div>
 
           <div className="space-y-2 mt-3">
-            <Label htmlFor="email-register" className="text-gray-300">
+            <Label htmlFor="email-register" style={{ color: tema?.cor_texto_primaria }}>
               Seu Email
             </Label>
             <div className="relative">
               {/* Ícone do e-mail */}
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <Mail style={{ color: tema?.cor_texto_primaria }} className="absolute left-3 top-3 h-4 w-4 " />
 
               {/* Badge */}
-              <span className=" absolute -top-2 right-0 text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded-md flex items-center justify-center gap-1 font-medium shadow-sm">
+              <span style={{ backgroundColor: tema?.cor_tercearia, color: tema?.cor_texto_dark }} className=" absolute -top-2 right-0 text-[10px]   px-2 py-0.5 rounded-md flex items-center justify-center gap-1 font-medium shadow-sm">
                 <Lock className="h-3 w-3" />
                 <span className="mt-0.5 font-bold">Dados Protegidos</span>
               </span>
@@ -306,7 +316,8 @@ export default function CadastroAuth() {
                 onChange={(e) => setEmailRegister(e.target.value)}
                 required
                 disabled={registerFeedback.isLoading}
-                className="pl-10 bg-gray-800 border-green-500 text-white placeholder:text-white focus:bg-gray-800"
+                style={{ borderColor: tema?.cor_primaria , color: tema?.cor_texto_primaria }}
+                className="pl-10 bg-gray-800   placeholder:text-white focus:bg-gray-800"
               />
             </div>
           </div>
@@ -314,7 +325,7 @@ export default function CadastroAuth() {
           <div className="space-y-2 mt-3">
             <Label htmlFor="email-register" className="text-gray-300">
               Telefone (Whatsapp){" "}
-              <span className="text-green-500">
+              <span style={{ color: tema?.cor_primaria }}>
                 + Ganhe um Presente Grátis!
               </span>
             </Label>
@@ -326,7 +337,7 @@ export default function CadastroAuth() {
                 loading="eager"
               />
               */}
-              <Smartphone className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <Smartphone style={{ color: tema?.cor_texto_primaria }} className="absolute left-3 top-3 h-4 w-4 " />
               <Input
                 id="whatsapp-register"
                 placeholder="Digite aqui seu número de Telefone"
@@ -341,11 +352,11 @@ export default function CadastroAuth() {
           </div>
 
           <div className="space-y-2 mt-3">
-            <Label htmlFor="password-register" className="text-gray-300">
+            <Label htmlFor="password-register" style={{ color: tema?.cor_texto_primaria }}>
               Senha
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <Lock style={{ color: tema?.cor_texto_primaria }} className="absolute left-3 top-3 h-4 w-4 " />
               <Input
                 id="password-register"
                 placeholder="Escreva uma senha sua conta"
@@ -354,13 +365,15 @@ export default function CadastroAuth() {
                 onChange={(e) => setSenhaRegister(e.target.value)}
                 required
                 disabled={registerFeedback.isLoading}
-                className="pl-10 pr-10 bg-gray-800 border-green-500 text-white placeholder:text-white focus:bg-gray-800"
+                style={{ borderColor: tema?.cor_primaria , color: tema?.cor_texto_primaria }}
+                className="pl-10 pr-10 bg-gray-800  placeholder:text-white focus:bg-gray-800"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 h-8 w-8 text-gray-400 hover:text-white"
+                style={{ color: tema?.cor_texto_primaria }}
+                className="absolute right-1 top-1 h-8 w-8  hover:text-white"
                 onClick={togglePasswordVisibility}
                 disabled={registerFeedback.isLoading}
               >
@@ -389,7 +402,8 @@ export default function CadastroAuth() {
           <Button
             type="submit"
             disabled={registerFeedback.isLoading}
-            className="w-full bg-green-600 hover:bg-green-700 mt-4 disabled:opacity-50"
+            style={{ backgroundColor: tema?.cor_primaria , color: tema?.cor_texto_primaria }}
+            className="w-full   mt-4 disabled:opacity-50"
           >
             {registerFeedback.isLoading ? (
               <>
@@ -402,7 +416,7 @@ export default function CadastroAuth() {
               </>
             )}
           </Button>
-          <p className="text-green-500 mt-2 text-center">
+          <p style={{ color: tema?.cor_primaria }} className=" mt-2 text-center">
             Finalmente pronto para se divertir!
           </p>
         </CardFooter>

@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 import { loginJogador } from "../../api/jogador";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext"; // ✅ importa o hook do contexto
-
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import SplashScreen from "@/components/SplashScreen";
 
 // Hook para gerenciar feedback de API
@@ -151,6 +151,8 @@ function ApiFeedback({
 }
 
 export default function LoginAuth() {
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
   const router = useRouter();
   const { login: loginContext } = useAuth(); // ✅ pega a função login do contexto
   const [showPassword, setShowPassword] = useState(false);
@@ -207,6 +209,9 @@ export default function LoginAuth() {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 to-black">
       {/* Header */}
@@ -214,9 +219,13 @@ export default function LoginAuth() {
         <div className="flex items-center">
           <button
             onClick={() => router.push("/ajuda")}
-            className="flex items-center gap-1 text-white bg-gray-800 px-3 py-2 rounded-md"
+            style={{ color: tema?.cor_texto_primaria }}
+            className="flex items-center gap-1  bg-gray-800 px-3 py-2 rounded-md"
           >
-            <span className="font-bold bg-green-500 rounded-sm p-2">
+            <span
+              style={{ backgroundColor: tema?.cor_primaria }}
+              className="font-bold  rounded-sm p-2"
+            >
               <Headset className="h-4 w-4" />
             </span>
             Precisa de ajuda?
@@ -226,7 +235,8 @@ export default function LoginAuth() {
         <div className="flex items-center">
           <button
             onClick={() => router.push("/cadastro")}
-            className="flex items-center text-green-500 bg-gray-800 px-2 py-3 rounded-md"
+            style={{ color: tema?.cor_primaria }}
+            className="flex items-center  bg-gray-800 px-2 py-3 rounded-md"
           >
             Cadastro aqui
             <span className="font-bold bg-transparent rounded-sm px-1 py-0 flex justify-center items-center mt-1">
@@ -237,19 +247,28 @@ export default function LoginAuth() {
       </div>
       <div className="flex items-center justify-between w-full px-2 py-2 ">
         <img
-          src="/assets/banner_cadastro.png"
+          //src="/assets/banner_cadastro.png"
+          src="https://imagedelivery.net/BgH9d8bzsn4n0yijn4h7IQ/8976a3cd-95f8-4140-6a5d-cbf70041f400/w=600?quality=95&format=auto"
           alt="Banner do Cassino"
           className="w-full h-full object-contain"
           loading="eager"
         />
       </div>
       <div className="flex items-center justify-center w-full px-2 py-2 gap-2">
-        <span className="font-bold bg-green-500 rounded-sm p-2 text-white">
+        <span
+          style={{ backgroundColor: tema?.cor_primaria }}
+          className="font-bold  rounded-sm p-2 text-white"
+        >
           <Laugh className="h-4 w-4" />
         </span>
-        <p className="text-white text-center">
+        <p style={{ color: tema?.cor_texto_primaria }} className=" text-center">
           Realize seu Login para{" "}
-          <span className="text-green-500 font-semibold">jogar!</span>
+          <span
+            style={{ color: tema?.cor_primaria }}
+            className=" font-semibold"
+          >
+            jogar!
+          </span>
         </p>
       </div>
       {/* Formulario cadastro */}
@@ -259,15 +278,27 @@ export default function LoginAuth() {
       >
         <CardContent className="w-full p-0">
           <div className="space-y-2 mt-3">
-            <Label htmlFor="email-register" className="text-gray-300">
+            <Label
+              htmlFor="email-register"
+              style={{ color: tema?.cor_texto_primaria }}
+            >
               Seu Email
             </Label>
             <div className="relative">
               {/* Ícone do e-mail */}
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <Mail
+                style={{ color: tema?.cor_texto_primaria }}
+                className="absolute left-3 top-3 h-4 w-4 "
+              />
 
               {/* Badge */}
-              <span className=" absolute -top-2 right-0 text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded-md flex items-center justify-center gap-1 font-medium shadow-sm">
+              <span
+                style={{
+                  backgroundColor: tema?.cor_tercearia,
+                  color: tema?.cor_texto_dark,
+                }}
+                className=" absolute -top-2 right-0 text-[10px]   px-2 py-0.5 rounded-md flex items-center justify-center gap-1 font-medium shadow-sm"
+              >
                 <Lock className="h-3 w-3" />
                 <span className="mt-0.5 font-bold">Dados Protegidos</span>
               </span>
@@ -281,17 +312,27 @@ export default function LoginAuth() {
                 onChange={(e) => setEmailLogin(e.target.value)}
                 required
                 disabled={loginFeedback.isLoading}
-                className="pl-10 bg-gray-800 border-green-500 text-white placeholder:text-white focus:bg-gray-800"
+                style={{
+                  borderColor: tema?.cor_primaria,
+                  color: tema?.cor_texto_primaria,
+                }}
+                className="pl-10 bg-gray-800   placeholder:text-white focus:bg-gray-800"
               />
             </div>
           </div>
 
           <div className="space-y-2 mt-3">
-            <Label htmlFor="password-register" className="text-gray-300">
+            <Label
+              htmlFor="password-register"
+              style={{ color: tema?.cor_texto_primaria }}
+            >
               Senha
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-white" />
+              <Lock
+                style={{ color: tema?.cor_texto_primaria }}
+                className="absolute left-3 top-3 h-4 w-4"
+              />
               <Input
                 id="password-register"
                 placeholder="Escreva uma senha sua conta"
@@ -300,13 +341,18 @@ export default function LoginAuth() {
                 onChange={(e) => setSenhaLogin(e.target.value)}
                 required
                 disabled={loginFeedback.isLoading}
-                className="pl-10 pr-10 bg-gray-800 border-green-500 text-white placeholder:text-white focus:bg-gray-800"
+                style={{
+                  borderColor: tema?.cor_primaria,
+                  color: tema?.cor_texto_primaria,
+                }}
+                className="pl-10 pr-10 bg-gray-800   placeholder:text-white focus:bg-gray-800"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 h-8 w-8 text-gray-400 hover:text-white"
+                style={{ color: tema?.cor_texto_primaria }}
+                className="absolute right-1 top-1 h-8 w-8 hover:text-white"
                 onClick={togglePasswordVisibility}
                 disabled={loginFeedback.isLoading}
               >
@@ -335,7 +381,11 @@ export default function LoginAuth() {
           <Button
             type="submit"
             disabled={loginFeedback.isLoading}
-            className="w-full bg-green-600 hover:bg-green-700 mt-4 disabled:opacity-50"
+            style={{
+              backgroundColor: tema?.cor_primaria,
+              color: tema?.cor_texto_primaria,
+            }}
+            className="w-full   mt-4 disabled:opacity-50"
           >
             {loginFeedback.isLoading ? (
               <>
@@ -348,7 +398,10 @@ export default function LoginAuth() {
               </>
             )}
           </Button>
-          <p className="text-green-500 mt-2 text-center">
+          <p
+            style={{ color: tema?.cor_primaria }}
+            className=" mt-2 text-center"
+          >
             Finalmente pronto para se divertir!
           </p>
         </CardFooter>
