@@ -17,7 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 
 // ==================== DADOS MOCKADOS ====================
 
@@ -41,11 +41,32 @@ function hexToRgba(hex, alpha = 1) {
 }
 
 export default function Footer() {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+
+  const tema = configCassino?.tema;
+  const cassino = configCassino?.cassino;
+  const logoCassino = cassino?.ImagensCassinos?.find(img => img.tipo === 4);
+  const urlLogoCassino = logoCassino ? logoCassino.url : "";
+
+  const nomeCassino = cassino?.nome || "Cassino do Lex Luthor";
+  const whatsappCassino =
+    cassino?.MidiasSociaisCassino?.whatsapp || "(48) 9 9130-0326";
+  const facebookCassino =
+    cassino?.MidiasSociaisCassino?.facebook ||
+    "https://www.facebook.com/lex.luthor.1";
+  const instagramCassino =
+    cassino?.MidiasSociaisCassino?.instagram ||
+    "https://www.instagram.com/lex.luthor.1/";
+  const twitterCassino =
+    cassino?.MidiasSociaisCassino?.twitter ||
+    "https://twitter.com/lex.luthor.1";
 
   const [hoveredItem, setHoveredItem] = useState(null);
   const [hoverBotao, setHoverBotao] = useState(false);
   const [hoveredCategoria, setHoveredCategoria] = useState(null);
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
 
   return (
     <footer className="bg-zinc-800 border-t border-zinc-700 py-6 sm:py-8 mb-15">
@@ -55,14 +76,14 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-1 text-left sm:text-left mb-6 sm:mb-0">
             <a href="/" className="flex items-center">
               <img
-                src="/assets/logo.svg"
-                //src="https://winrico.site/public/uploads/12411032025090050.png"
+                //src="/assets/logo.svg"
+                src={urlLogoCassino}
                 alt="Logo do Cassino"
-                className="h-12 sm:h-16 max-w-full object-contain"
+                className="sm:h-16 max-w-[150px] object-contain mb-2"
               />
             </a>
             <p
-              style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+              style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
               className=" text-sm sm:text-base"
             >
               A melhor experiência de cassino online com uma grande variedade de
@@ -72,14 +93,15 @@ export default function Footer() {
             {/* Redes sociais */}
             <div className="mt-4 flex space-x-4">
               <a
-                href="#"
+                href={facebookCassino}
+                target="_blank"
                 onMouseEnter={() => setHoveredItem("facebook")}
                 onMouseLeave={() => setHoveredItem(null)}
                 style={{
                   color:
                     hoveredItem === "facebook"
-                      ? theme?.cor_primaria || "#1DC950"
-                      : theme?.cor_texto_secundaria || "#a1a1aa",
+                      ? tema?.cor_primaria || "#1DC950"
+                      : tema?.cor_texto_secundaria || "#a1a1aa",
                 }}
                 className="transition-colors"
               >
@@ -87,14 +109,15 @@ export default function Footer() {
               </a>
 
               <a
-                href="#"
+                href={instagramCassino}
+                target="_blank"
                 onMouseEnter={() => setHoveredItem("instagram")}
                 onMouseLeave={() => setHoveredItem(null)}
                 style={{
                   color:
                     hoveredItem === "instagram"
-                      ? theme?.cor_primaria || "#1DC950"
-                      : theme?.cor_texto_secundaria || "#a1a1aa",
+                      ? tema?.cor_primaria || "#1DC950"
+                      : tema?.cor_texto_secundaria || "#a1a1aa",
                 }}
                 className="transition-colors"
               >
@@ -102,14 +125,15 @@ export default function Footer() {
               </a>
 
               <a
-                href="#"
+                href={twitterCassino}
+                target="_blank"
                 onMouseEnter={() => setHoveredItem("twitter")}
                 onMouseLeave={() => setHoveredItem(null)}
                 style={{
                   color:
                     hoveredItem === "twitter"
-                      ? theme?.cor_primaria || "#1DC950"
-                      : theme?.cor_texto_secundaria || "#a1a1aa",
+                      ? tema?.cor_primaria || "#1DC950"
+                      : tema?.cor_texto_secundaria || "#a1a1aa",
                 }}
                 className="transition-colors"
               >
@@ -120,17 +144,17 @@ export default function Footer() {
 
           <div className="mb-6 sm:mb-0">
             <h3
-              style={{ color: theme?.cor_texto_primaria || "#fff" }}
+              style={{ color: tema?.cor_texto_primaria || "#fff" }}
               className="text-base sm:text-lg font-bold mb-2 sm:mb-4 flex items-center"
             >
               <GamepadIcon
-                style={{ color: theme?.cor_primaria || "#1DC950" }}
+                style={{ color: tema?.cor_primaria || "#1DC950" }}
                 className="w-4 h-4 mr-2"
               />
               Jogos
             </h3>
             <ul
-              style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+              style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
               className="space-y-1 sm:space-y-2 text-sm sm:text-base"
             >
               {categoriaJogos.slice(0, 4).map((categoria) => (
@@ -142,8 +166,8 @@ export default function Footer() {
                     style={{
                       color:
                         hoveredCategoria === categoria.id
-                          ? theme?.cor_primaria || "#1DC950"
-                          : theme?.cor_texto_secundaria || "#a1a1aa",
+                          ? tema?.cor_primaria || "#1DC950"
+                          : tema?.cor_texto_secundaria || "#a1a1aa",
                     }}
                     className="flex items-center transition-colors"
                   >
@@ -157,17 +181,17 @@ export default function Footer() {
 
           <div className="mb-6 sm:mb-0">
             <h3
-              style={{ color: theme?.cor_texto_primaria || "#fff" }}
+              style={{ color: tema?.cor_texto_primaria || "#fff" }}
               className="text-base sm:text-lg font-bold mb-2 sm:mb-4 flex items-center"
             >
               <HelpCircle
-                style={{ color: theme?.cor_primaria || "#1DC950" }}
+                style={{ color: tema?.cor_primaria || "#1DC950" }}
                 className="w-4 h-4 mr-2"
               />
               Suporte
             </h3>
             <ul
-              style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+              style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
               className="space-y-1 sm:space-y-2 text-sm sm:text-base"
             >
               <li>
@@ -178,8 +202,8 @@ export default function Footer() {
                   style={{
                     color:
                       hoveredItem === "faq"
-                        ? theme?.cor_primaria || "#1DC950"
-                        : theme?.cor_texto_secundaria || "#a1a1aa",
+                        ? tema?.cor_primaria || "#1DC950"
+                        : tema?.cor_texto_secundaria || "#a1a1aa",
                   }}
                   className="flex items-center transition-colors"
                 >
@@ -195,8 +219,8 @@ export default function Footer() {
                   style={{
                     color:
                       hoveredItem === "contato"
-                        ? theme?.cor_primaria || "#1DC950"
-                        : theme?.cor_texto_secundaria || "#a1a1aa",
+                        ? tema?.cor_primaria || "#1DC950"
+                        : tema?.cor_texto_secundaria || "#a1a1aa",
                   }}
                   className="flex items-center transition-colors"
                 >
@@ -212,8 +236,8 @@ export default function Footer() {
                   style={{
                     color:
                       hoveredItem === "termos"
-                        ? theme?.cor_primaria || "#1DC950"
-                        : theme?.cor_texto_secundaria || "#a1a1aa",
+                        ? tema?.cor_primaria || "#1DC950"
+                        : tema?.cor_texto_secundaria || "#a1a1aa",
                   }}
                   className="flex items-center transition-colors"
                 >
@@ -229,8 +253,8 @@ export default function Footer() {
                   style={{
                     color:
                       hoveredItem === "privacidade"
-                        ? theme?.cor_primaria || "#1DC950"
-                        : theme?.cor_texto_secundaria || "#a1a1aa",
+                        ? tema?.cor_primaria || "#1DC950"
+                        : tema?.cor_texto_secundaria || "#a1a1aa",
                   }}
                   className="flex items-center transition-colors"
                 >
@@ -243,17 +267,17 @@ export default function Footer() {
 
           <div className="col-span-2 sm:col-span-1 text-left">
             <h3
-              style={{ color: theme?.cor_texto_primaria || "#fff" }}
+              style={{ color: tema?.cor_texto_primaria || "#fff" }}
               className="text-base sm:text-lg font-bold mb-2 sm:mb-4 flex items-center"
             >
               <AlertTriangle
-                style={{ color: theme?.cor_primaria || "#1DC950" }}
+                style={{ color: tema?.cor_primaria || "#1DC950" }}
                 className="w-4 h-4 mr-2"
               />
               Jogo Responsável
             </h3>
             <p
-              style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+              style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
               className=" text-sm sm:text-base mb-3 sm:mb-4"
             >
               Promovemos o jogo responsável. Por favor, jogue com
@@ -263,10 +287,10 @@ export default function Footer() {
               onMouseEnter={() => setHoverBotao(true)}
               onMouseLeave={() => setHoverBotao(false)}
               style={{
-                color: theme?.cor_primaria || "#1DC950",
-                borderColor: theme?.cor_primaria || "#1DC950",
+                color: tema?.cor_primaria || "#1DC950",
+                borderColor: tema?.cor_primaria || "#1DC950",
                 backgroundColor: hoverBotao
-                  ? hexToRgba(theme?.cor_primaria || "#1DC950", 0.1)
+                  ? hexToRgba(tema?.cor_primaria || "#1DC950", 0.1)
                   : "transparent",
               }}
               className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-md border flex items-center justify-center transition-colors"
@@ -277,26 +301,26 @@ export default function Footer() {
 
             {/* Contato rápido */}
             <div
-              style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+              style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
               className="mt-4 flex items-center text-sm"
             >
               <Phone className="w-4 h-4 mr-2" />
-              <span>Suporte: (11) 9999-9999</span>
+              <span>Suporte: {whatsappCassino}</span>
             </div>
           </div>
         </div>
 
         <div
-          style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+          style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
           className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-zinc-700 text-center"
         >
           <p className="text-sm sm:text-base">
-            © {new Date().getFullYear()} Zone Bets. Todos os direitos
+            © {new Date().getFullYear()} {nomeCassino}. Todos os direitos
             reservados.
           </p>
           <p className="mt-1 sm:mt-2 text-xs sm:text-sm flex items-center justify-center">
             <AlertTriangle
-              style={{ color: theme?.cor_tercearia || "#F4D51E" }}
+              style={{ color: tema?.cor_tercearia || "#F4D51E" }}
               className="w-3.5 h-3.5 mr-1.5"
             />
             Este site é destinado a maiores de 18 anos. Jogue com

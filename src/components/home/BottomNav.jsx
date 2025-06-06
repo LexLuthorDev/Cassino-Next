@@ -2,35 +2,41 @@
 
 import { useRouter } from "next/navigation";
 import { Home, Gift, Menu, Smile, User, Medal } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 
 export default function BottomNav() {
   const router = useRouter();
-  const theme = useTheme();
+
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+
+  const tema = configCassino?.tema;
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
 
   return (
     <nav
       style={{
-        backgroundColor: theme?.cor_secundaria,
-        borderColor: theme?.cor_secundaria,
+        backgroundColor: tema?.cor_secundaria,
+        borderColor: tema?.cor_secundaria,
       }}
       className="fixed bottom-0 left-0 w-full  border-t  flex justify-around items-center h-16 z-50"
     >
       <button
         onClick={() => router.push("/")}
-        style={{ color: theme?.cor_texto_primaria }}
+        style={{ color: tema?.cor_texto_primaria }}
         className=" flex flex-col items-center text-xs"
       >
-        <Home style={{ color: theme?.cor_primaria }} className="w-5 h-5" />
+        <Home style={{ color: tema?.cor_primaria }} className="w-5 h-5" />
         Início
       </button>
 
       <button
         onClick={() => router.push("/bonus")}
-        style={{ color: theme?.cor_texto_primaria }}
+        style={{ color: tema?.cor_texto_primaria }}
         className=" flex flex-col items-center text-xs"
       >
-        <Gift style={{ color: theme?.cor_primaria }} className="w-5 h-5" />
+        <Gift style={{ color: tema?.cor_primaria }} className="w-5 h-5" />
         Bônus
       </button>
 
@@ -39,13 +45,13 @@ export default function BottomNav() {
         <button
           onClick={() => router.push("/jogar")}
           style={{
-            backgroundColor: theme?.cor_primaria,
-            borderColor: theme?.cor_secundaria,
+            backgroundColor: tema?.cor_primaria,
+            borderColor: tema?.cor_secundaria,
           }}
           className=" w-16 h-16 rounded-full flex items-center justify-center border-4  shadow-xl"
         >
           <Medal
-            style={{ color: theme?.cor_texto_primaria }}
+            style={{ color: tema?.cor_texto_primaria }}
             className=" w-8 h-8"
           />
         </button>
@@ -53,19 +59,19 @@ export default function BottomNav() {
 
       <button
         onClick={() => router.push("/perfil")}
-        style={{ color: theme?.cor_texto_primaria }}
+        style={{ color: tema?.cor_texto_primaria }}
         className=" flex flex-col items-center text-xs"
       >
-        <User style={{ color: theme?.cor_primaria }} className="w-5 h-5" />
+        <User style={{ color: tema?.cor_primaria }} className="w-5 h-5" />
         Perfil
       </button>
 
       <button
         onClick={() => router.push("/menu")}
-        style={{ color: theme?.cor_texto_primaria }}
+        style={{ color: tema?.cor_texto_primaria }}
         className=" flex flex-col items-center text-xs"
       >
-        <Menu style={{ color: theme?.cor_primaria }} className="w-5 h-5" />
+        <Menu style={{ color: tema?.cor_primaria }} className="w-5 h-5" />
         Menu
       </button>
     </nav>

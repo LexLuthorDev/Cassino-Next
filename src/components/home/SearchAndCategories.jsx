@@ -1,6 +1,6 @@
 import { Handshake, Gift, Flag, Mail } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 // ==================== DADOS MOCKADOS ====================
 
 const categoriaJogos = [
@@ -16,7 +16,8 @@ const categoriaJogos = [
 ];
 
 export default function SearchAndCategories() {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
   const categoriesRef = useRef(null);
@@ -122,13 +123,16 @@ export default function SearchAndCategories() {
     };
   }, []);
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <section className="container mx-auto px-1 py-0 sm:py-0 pr-2 pl-2">
       <div className="flex flex-col gap-3 sm:gap-4">
         <div className="relative w-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            style={{ color: theme?.cor_texto_secundaria }}
+            style={{ color: tema?.cor_texto_secundaria }}
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             width="16"
             height="16"
@@ -146,21 +150,21 @@ export default function SearchAndCategories() {
             type="text"
             placeholder="Pesquisar jogos..."
             style={{
-              color: theme?.cor_texto_primaria,
-              borderColor: theme?.cor_borda_input || "#3f3f46",
-              backgroundColor: theme?.bg_input || "#27272a",
+              color: tema?.cor_texto_primaria,
+              borderColor: tema?.cor_borda_input || "#3f3f46",
+              backgroundColor: tema?.bg_input || "#27272a",
             }}
             className="w-full pl-9 py-2.5 text-sm sm:text-base rounded-md border focus:ring-1 focus:outline-none"
             onFocus={(e) => {
               e.target.style.borderColor =
-                theme?.cor_borda_onfocus_input || "#22c55e"; // fallback green-500
+                tema?.cor_borda_onfocus_input || "#22c55e"; // fallback green-500
               e.target.style.boxShadow = `0 0 0 1px ${
-                theme?.cor_borda_onfocus_input || "#22c55e"
+                tema?.cor_borda_onfocus_input || "#22c55e"
               }`;
             }}
             onBlur={(e) => {
               e.target.style.borderColor =
-                theme?.cor_borda_onblur_input || "#3f3f46";
+                tema?.cor_borda_onblur_input || "#3f3f46";
               e.target.style.boxShadow = "none";
             }}
             value={termoPesquisa}
@@ -174,8 +178,8 @@ export default function SearchAndCategories() {
         >
           <div
             style={{
-              borderColor: theme?.cor_borda_input || "#3f3f46",
-              backgroundColor: theme?.bg_input || "#27272a",
+              borderColor: tema?.cor_borda_input || "#3f3f46",
+              backgroundColor: tema?.bg_input || "#27272a",
             }}
             className="flex gap-2 border  rounded-md p-1 min-w-max"
           >
@@ -188,11 +192,11 @@ export default function SearchAndCategories() {
                   key={categoria.id + "_" + index}
                   style={{
                     backgroundColor: isHighlight
-                      ? theme?.cor_primaria || "#22c55e"
-                      : theme?.bg_secundario || "#3f3f46",
+                      ? tema?.cor_primaria || "#22c55e"
+                      : tema?.bg_secundario || "#3f3f46",
                     color: isHighlight
-                      ? theme?.cor_texto_primaria || "#ffffff"
-                      : theme?.cor_texto_primaria || "#ffffff",
+                      ? tema?.cor_texto_primaria || "#ffffff"
+                      : tema?.cor_texto_primaria || "#ffffff",
                   }}
                   className="flex items-center px-2 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors"
                   onClick={() => setCategoriaAtiva(categoria.id)}
@@ -200,7 +204,7 @@ export default function SearchAndCategories() {
                   {categoria.is_span ? (
                     <span
                       style={{
-                        backgroundColor: theme?.cor_primaria || "#1DC950",
+                        backgroundColor: tema?.cor_primaria || "#1DC950",
                       }}
                       className="mr-2 p-1 rounded-sm"
                     >

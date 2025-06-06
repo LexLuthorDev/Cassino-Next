@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import Header from "@/components/home/Header";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import { Gift } from "lucide-react";
 import BottomNav from "@/components/home/BottomNav";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
@@ -12,13 +12,17 @@ import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import PwaInstallBanner from "@/components/PwaInstallBanner"; // ✅ novo banner
 
 export default function PagePromocoes() {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <div
-      style={{ backgroundColor: theme?.cor_fundo || "#18181B" }}
+      style={{ backgroundColor: tema?.cor_fundo || "#18181B" }}
       className="min-h-screen flex flex-col text-white"
     >
       {/* BANNER FIXO ACIMA DO HEADER */}
@@ -33,7 +37,7 @@ export default function PagePromocoes() {
       <main className="flex-1 mb-20">
         <section className="container mx-auto px-3 py-4 sm:py-6">
           <div className="flex items-center justify-start mb-3 gap-2">
-            <Gift style={{ color: theme?.cor_primaria }} className="w-6 h-6 " />
+            <Gift style={{ color: tema?.cor_primaria }} className="w-6 h-6 " />
             <h1 className="text-2xl sm:text-3xl font-bold">Promoções</h1>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

@@ -12,7 +12,7 @@ export const DadosJogadorProvider = ({ children }) => {
 
     try {
       const res = await getJogadorMe();
-      console.log("Dados do jogador:", res.data);
+      //console.log("Dados do jogador:", res.data);
 
       setDadosJogador(res.data);
     } catch (err) {

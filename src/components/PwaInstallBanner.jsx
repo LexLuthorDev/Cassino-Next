@@ -1,23 +1,33 @@
 // src/components/PwaInstallBanner.jsx
 import { X, Download } from "lucide-react";
 
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 
 export default function PwaInstallBanner({ visible, onInstall, onClose }) {
   if (!visible) return null;
 
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
 
   return (
-    <div style={{ backgroundColor: theme?.cor_primaria_dark }} className="w-full  text-white text-sm sm:text-base px-4 py-2 flex items-center justify-between z-50  fixed top-0 left-0">
+    <div
+      style={{ backgroundColor: tema?.cor_primaria_dark, color: tema?.cor_texto_primaria }}
+      className="w-full   text-sm sm:text-base px-4 py-2 flex items-center justify-between z-50  fixed top-0 left-0"
+    >
       <div className="flex items-center gap-2">
         <Download className="w-6 h-6" />
-        <span className=" text-xs">Faça o download do nosso aplicativo para uma experiência ainda melhor!</span>
+        <span className=" text-xs">
+          Faça o download do nosso aplicativo para uma experiência ainda melhor!
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={onInstall}
-          className="bg-white text-green-700 px-3 py-1 rounded hover:bg-green-200 text-xs sm:text-sm"
+          style={{color: tema?.cor_primaria_dark}}
+          className="bg-white  px-3 py-1 rounded  text-xs sm:text-sm"
         >
           Instalar
         </button>

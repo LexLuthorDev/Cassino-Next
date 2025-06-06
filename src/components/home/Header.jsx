@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useTheme } from "@/context/ThemeContext";
 import { useDadosJogador } from "@/context/DadosJogadorContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import {
   Gift,
   Menu,
@@ -22,19 +22,24 @@ import {
 } from "lucide-react";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 
-
 export default function Header({ offsetTop = 0 }) {
   const { showInstallModal, triggerInstall, setShowInstallModal } =
-      usePwaInstallPrompt();
-  
+    usePwaInstallPrompt();
+
   const router = useRouter();
-  const { dadosJogador } = useDadosJogador();
+  const { dadosJogador, loading, getDadosJogadorData } = useDadosJogador();
   const saldoJogador = dadosJogador?.usuario?.jogador?.saldo_total ?? 0;
   const { isAuthenticated, logout } = useAuth();
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
 
-  const theme = useTheme();
-  const irParaLogin = () => router.push("/login?tab=login");
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+
+  const tema = configCassino?.tema;
+  const cassino = configCassino?.cassino;
+  const logoCassino = cassino?.ImagensCassinos?.find(img => img.tipo === 4);
+  const urlLogoCassino = logoCassino ? logoCassino.url : "";
+
+  const irParaLogin = () => router.push("/login");
   const irParaCadastro = () => router.push("/cadastro");
 
   const handleLogout = () => {
@@ -67,7 +72,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: Gift,
       label: "Presentes",
-      bgColor: theme?.bg_secundario,
+      bgColor: tema?.bg_secundario,
       textColor: "#FFFFFF",
       badge: "🎁 Coletar agora!",
       is_span: true,
@@ -83,7 +88,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: MessageCircle,
       label: "Mensagens!",
-      bgColor: theme?.bg_secundario,
+      bgColor: tema?.bg_secundario,
       textColor: "#FFFFFF",
       notification: 3,
       is_span: true,
@@ -112,33 +117,46 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: Headphones,
       label: "Suporte (24h)",
-      bgColor: theme?.bg_secundario,
+      bgColor: tema?.bg_secundario,
       textColor: "#FFFFFF",
       is_span: true,
     },
   ];
 
+  useEffect(() => {
+    if (isAuthenticated && !dadosJogador) {
+      getDadosJogadorData();
+    }
+  }, [isAuthenticated]);
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <>
       {/* HEADER */}
       <header
-        style={{ backgroundColor: theme?.cor_secundaria, top: `${offsetTop}px`  }}
+        style={{
+          backgroundColor: tema?.cor_secundaria,
+          top: `${offsetTop}px`,
+        }}
         className="sticky z-50 backdrop-blur-sm border-b border-zinc-700 w-full pr-2 pl-2"
       >
         <div className="container mx-auto px-1 py-2 sm:py-3 flex items-center justify-between">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
               <img
-                src="/assets/logo.svg"
+                //src="/assets/logo.svg" 
+                src={urlLogoCassino}
                 alt="Logo do Cassino"
-                className="h-12 sm:h-16 max-w-full object-contain"
+                className=" max-w-[130px] object-contain"
               />
             </a>
           </div>
 
           {/* NAVEGAÇÃO */}
           <div
-            className={`w-[60%] ${
+            className={`w-[60%]  ${
               isAuthenticated
                 ? "flex flex-row items-center justify-start space-x-4"
                 : "flex items-center justify-end space-x-1 md:flex"
@@ -147,12 +165,16 @@ export default function Header({ offsetTop = 0 }) {
             {isAuthenticated ? (
               <>
                 <div
-                  style={{ color: theme?.cor_texto_primaria }}
-                  className="flex-grow"
+                  style={{ color: tema?.cor_texto_primaria }}
+                  className="flex-grow  flex items-center justify-center"
                 >
                   <span className="flex flex-col justify-center items-start">
                     Seu saldo:
-                    <span className="font-bold">{saldoJogador}</span>
+                    {loading ? (
+                      <span className="mt-1 h-4 w-16 bg-zinc-700 animate-pulse rounded"></span>
+                    ) : (
+                      <span className="font-bold">{saldoJogador}</span>
+                    )}
                   </span>
                 </div>
 
@@ -161,16 +183,16 @@ export default function Header({ offsetTop = 0 }) {
                     <button
                       onClick={handleLogout}
                       style={{
-                        backgroundColor: theme?.cor_primaria,
-                        color: theme?.cor_texto_primaria,
+                        backgroundColor: tema?.cor_primaria,
+                        color: tema?.cor_texto_primaria,
                       }}
                       className="px-1 py-1 rounded-md border border-transparent font-medium cursor-pointer transition-all duration-200 relative"
                     >
                       <Gift />
                       <span
                         style={{
-                          backgroundColor: theme?.cor_tercearia,
-                          color: theme?.cor_texto_dark,
+                          backgroundColor: tema?.cor_tercearia,
+                          color: tema?.cor_texto_dark,
                         }}
                         className="absolute -top-2 -right-2 text-xs font-bold px-1.5 py-0.5 rounded-full"
                       >
@@ -183,7 +205,7 @@ export default function Header({ offsetTop = 0 }) {
                 <div className="flex items-center justify-center">
                   <button
                     onClick={() => setMenuMobileAberto((prev) => !prev)}
-                    style={{ color: theme?.cor_texto_primaria }}
+                    style={{ color: tema?.cor_texto_primaria }}
                     className="px-1 py-1 rounded-md border border-transparent font-medium cursor-pointer transition-all duration-200"
                   >
                     <Menu />
@@ -195,11 +217,12 @@ export default function Header({ offsetTop = 0 }) {
                 <div className="relative">
                   <button
                     onClick={irParaCadastro}
-                    className="px-4 py-1 rounded-full border border-transparent text-white bg-green-500 font-medium cursor-pointer transition-all duration-200"
+                    style={{ backgroundColor: tema?.cor_primaria, color: tema?.cor_texto_primaria }}
+                    className="px-4 py-1 rounded-full border border-transparent   font-medium cursor-pointer transition-all duration-200"
                   >
                     Registre-se
                   </button>
-                  <span className="absolute -top-3 -right-0 bg-yellow-300 text-black text-xs font-bold px-3 py-0.5 rounded-full transform rotate-1">
+                  <span style={{ backgroundColor: tema?.cor_tercearia, color: tema?.cor_texto_dark }} className="absolute -top-3 -right-0  text-black text-xs font-bold px-3 py-0.5 rounded-full transform rotate-1">
                     <img
                       src="/assets/pix.svg"
                       alt="PIX"
@@ -210,7 +233,8 @@ export default function Header({ offsetTop = 0 }) {
                 </div>
                 <button
                   onClick={irParaLogin}
-                  className="px-4 py-1 rounded-full border border-green-500 text-green-500 hover:bg-green-500/10 font-medium cursor-pointer transition-colors bg-[#1a1a1a]"
+                  style={{  color: tema?.cor_texto_primaria, borderColor: tema?.cor_primaria }}
+                  className="px-4 py-1 rounded-full border    font-medium cursor-pointer transition-colors bg-[#1a1a1a]"
                 >
                   Entrar
                 </button>
@@ -235,19 +259,19 @@ export default function Header({ offsetTop = 0 }) {
             menuMobileAberto ? "translate-x-0" : "translate-x-full"
           }`}
           style={{
-            backgroundColor: theme?.bg_card || "#18181B",
-            color: theme?.cor_texto_primaria,
+            backgroundColor: tema?.bg_card || "#18181B",
+            color: tema?.cor_texto_primaria,
           }}
         >
           {/* Header do Menu */}
           <div className="flex justify-between items-center p-4 border-b border-zinc-700">
             <span
-              style={{ backgroundColor: theme?.bg_secundario }}
+              style={{ backgroundColor: tema?.bg_secundario }}
               className="flex items-center gap-2 px-6 py-2 rounded-md"
             >
-              <User style={{ color: theme?.cor_texto_primaria }} />{" "}
+              <User style={{ color: tema?.cor_texto_primaria }} />{" "}
               <span
-                style={{ color: theme?.cor_primaria }}
+                style={{ color: tema?.cor_primaria }}
                 className="font-bold mt-1"
               >
                 Meu Perfil
@@ -255,7 +279,7 @@ export default function Header({ offsetTop = 0 }) {
             </span>
             <button
               onClick={() => setMenuMobileAberto(false)}
-              style={{ borderColor: theme?.cor_primaria }}
+              style={{ borderColor: tema?.cor_primaria }}
               className="text-xl px-1 py-2 rounded-md border border-transparent font-medium cursor-pointer transition-all duration-200"
             >
               <X />
@@ -277,8 +301,8 @@ export default function Header({ offsetTop = 0 }) {
               <span
                 className="absolute flex items-center gap-1 -top-1 -right-1 text-xs font-bold px-2 py-0.5 rounded-full"
                 style={{
-                  backgroundColor: theme?.cor_tercearia || "#F59E0B",
-                  color: theme?.cor_texto_dark || "#000",
+                  backgroundColor: tema?.cor_tercearia || "#F59E0B",
+                  color: tema?.cor_texto_dark || "#000",
                 }}
               >
                 <img src="/assets/pix.svg" alt="PIX" className="w-4 h-4" />{" "}
@@ -299,8 +323,8 @@ export default function Header({ offsetTop = 0 }) {
               <span
                 className="absolute flex items-center gap-1 -top-1 -right-1 text-xs font-bold px-2 py-0.5 rounded-full"
                 style={{
-                  backgroundColor: theme?.cor_tercearia || "#F59E0B",
-                  color: theme?.cor_texto_dark || "#000",
+                  backgroundColor: tema?.cor_tercearia || "#F59E0B",
+                  color: tema?.cor_texto_dark || "#000",
                 }}
               >
                 <img src="/assets/pix.svg" alt="PIX" className="w-4 h-4" /> Pix
@@ -337,8 +361,8 @@ export default function Header({ offsetTop = 0 }) {
                     <span
                       className="absolute -top-2 -right-1 text-xs font-bold px-2 py-1 rounded-full transform rotate-0"
                       style={{
-                        backgroundColor: theme?.cor_tercearia,
-                        color: theme?.cor_texto_dark,
+                        backgroundColor: tema?.cor_tercearia,
+                        color: tema?.cor_texto_dark,
                       }}
                     >
                       {item.badge}
@@ -350,8 +374,8 @@ export default function Header({ offsetTop = 0 }) {
                     <span
                       className="absolute -top-1 -right-1 text-xs font-bold px-2 py-1 rounded-full min-w-[20px] text-center"
                       style={{
-                        backgroundColor: theme?.cor_tercearia,
-                        color: theme?.cor_texto_dark,
+                        backgroundColor: tema?.cor_tercearia,
+                        color: tema?.cor_texto_dark,
                       }}
                     >
                       {item.notification}
@@ -365,7 +389,7 @@ export default function Header({ offsetTop = 0 }) {
           {/* Footer com informações */}
           <div className="p-4 border-t border-zinc-700">
             <div
-              style={{ color: theme?.cor_primaria }}
+              style={{ color: tema?.cor_primaria }}
               className="text-xs opacity-70 text-center"
             >
               <p>Plataforma Oficialmente</p>

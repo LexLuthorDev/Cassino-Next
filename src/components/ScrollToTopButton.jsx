@@ -2,12 +2,15 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 
 export default function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false);
 
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
+
+
 
   // Monitora rolagem para mostrar/esconder botão
   useEffect(() => {
@@ -25,12 +28,15 @@ export default function ScrollToTopButton() {
 
   if (!isVisible) return null;
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <button
       onClick={scrollToTop}
       style={{
         border: "1px solid",
-        borderColor: theme?.cor_primaria,
+        borderColor: tema?.cor_primaria,
         left: "50%",
         transform: "translateX(-50%)",
       }}

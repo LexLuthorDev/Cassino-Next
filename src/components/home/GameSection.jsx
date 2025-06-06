@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import { useRouter } from "next/navigation";
 
 function hexToRgba(hex, alpha = 1) {
@@ -13,7 +13,11 @@ function hexToRgba(hex, alpha = 1) {
 
 // ==================== COMPONENTE CARROSSEL DE JOGOS ====================
 function CarrosselJogos({ jogos }) {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+
+  const tema = configCassino?.tema;
+
+  
 
   const [indiceAtual, setIndiceAtual] = useState(0);
   const [itensVisiveis, setItensVisiveis] = useState(3);
@@ -90,6 +94,9 @@ function CarrosselJogos({ jogos }) {
     }
   };
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <div className="relative group">
       <div
@@ -106,12 +113,12 @@ function CarrosselJogos({ jogos }) {
             onMouseEnter={() => setHoveredCard(jogo.id)}
             onMouseLeave={() => setHoveredCard(null)}
             style={{
-              backgroundColor: theme?.bg_card || "#27272a",
-              borderColor: theme?.cor_borda_card || "#3f3f46",
+              backgroundColor: tema?.bg_card || "#27272a",
+              borderColor: tema?.cor_borda_card || "#3f3f46",
               boxShadow:
                 hoveredCard === jogo.id
                   ? `0 4px 20px ${hexToRgba(
-                      theme?.cor_primaria || "#1DC950",
+                      tema?.cor_primaria || "#1DC950",
                       0.2
                     )}`
                   : "none",
@@ -135,7 +142,7 @@ function CarrosselJogos({ jogos }) {
                 <div
                   style={{
                     backgroundImage: `linear-gradient(to top, ${hexToRgba(
-                      theme?.cor_sombra_card_games || "#000000",
+                      tema?.cor_sombra_card_games || "#000000",
                       0.35
                     )}, transparent)`,
                   }}
@@ -157,13 +164,13 @@ function CarrosselJogos({ jogos }) {
 
               <div className="p-2.5 sm:p-3 text-start">
                 <h3
-                  style={{ color: theme?.cor_texto_primaria || "#fff" }}
+                  style={{ color: tema?.cor_texto_primaria || "#fff" }}
                   className="font-bold text-sm sm:text-base mb-0.5 truncate"
                 >
                   {jogo.titulo}
                 </h3>
                 <div
-                  style={{ color: theme?.cor_texto_secundaria || "#a1a1aa" }}
+                  style={{ color: tema?.cor_texto_secundaria || "#a1a1aa" }}
                   className=" flex text-md mb-2 gap-3 truncate"
                 >
                   {jogo.fornecedor}
@@ -184,7 +191,7 @@ function CarrosselJogos({ jogos }) {
                           style={{
                             color:
                               i < jogo.avaliacao
-                                ? theme?.cor_primaria || "#22c55e" // fallback green-500
+                                ? tema?.cor_primaria || "#22c55e" // fallback green-500
                                 : "#71717a", // fallback zinc-600
                           }}
                         >
@@ -204,8 +211,8 @@ function CarrosselJogos({ jogos }) {
                         <span
                           key={index}
                           style={{
-                            backgroundColor: theme?.bg_secundario || "#3f3f46",
-                            color: theme?.cor_texto_secundaria || "#a1a1aa",
+                            backgroundColor: tema?.bg_secundario || "#3f3f46",
+                            color: tema?.cor_texto_secundaria || "#a1a1aa",
                           }}
                           className="flex items-center justify-center font-medium px-4 py-0.5  rounded-[5px]"
                         >
@@ -216,8 +223,8 @@ function CarrosselJogos({ jogos }) {
                   <button
                     onClick={() => router.push(`/games/${jogo.nome}`)}
                     style={{
-                      backgroundColor: theme?.cor_primaria || "#22c55e",
-                      color: theme?.cor_texto_primaria || "#fff",
+                      backgroundColor: tema?.cor_primaria || "#22c55e",
+                      color: tema?.cor_texto_primaria || "#fff",
                     }}
                     className="px-4 py-0 rounded-[5px] border border-transparent font-medium cursor-pointer transition-all duration-200"
                   >
@@ -287,14 +294,18 @@ function CarrosselJogos({ jogos }) {
 }
 
 export default function GameSection({ titulo, jogos }) {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
   return (
     <section className="container mx-auto px-3 py-4 sm:py-6">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <h2 className="text-xl sm:text-2xl font-bold">{titulo}</h2>
         <a
           href="#"
-          style={{ color: theme?.cor_primaria || "#1DC950" }}
+          style={{ color: tema?.cor_primaria || "#1DC950" }}
           className="text-xs sm:text-sm hover:underline"
         >
           Ver todos

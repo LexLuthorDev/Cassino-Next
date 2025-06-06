@@ -1,9 +1,12 @@
 import { useState, useRef } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import { promocoes } from "@/mocks/promocoes"; // <-- importa os dados
 
 export default function PromocoesSection() {
-  const theme = useTheme();
+   const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
+  
+
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const scrollRef = useRef(null);
@@ -20,16 +23,19 @@ export default function PromocoesSection() {
     if (touchStart - touchEnd < -75) scrollRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
   };
 
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
+
   return (
     <section className="container mx-auto px-1 py-3 sm:py-2 pr-2 pl-2">
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <span style={{ backgroundColor: theme?.cor_tercearia, color: theme?.cor_texto_dark}} className="text-sm px-1 py-1 rounded-[5px]">
+          <span style={{ backgroundColor: tema?.cor_tercearia, color: tema?.cor_texto_dark}} className="text-sm px-1 py-1 rounded-[5px]">
             <img src="/assets/estrela_black.svg" alt="Estrela" className="w-3" />
           </span>
-          <h2 style={{ color: theme?.cor_texto_primaria}} className="text-xl sm:text-2xl font-bold">Promoções</h2>
+          <h2 style={{ color: tema?.cor_texto_primaria}} className="text-xl sm:text-2xl font-bold">Promoções</h2>
         </div>
-        <a href="/promocoes" style={{ color: theme?.cor_primaria }} className="text-xs sm:text-sm hover:underline">Ver todas</a>
+        <a href="/promocoes" style={{ color: tema?.cor_primaria }} className="text-xs sm:text-sm hover:underline">Ver todas</a>
       </div>
 
       <div

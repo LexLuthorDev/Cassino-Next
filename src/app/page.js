@@ -8,7 +8,7 @@ import PromocoesSection from "@/components/home/PromocoesSection";
 import Footer from "@/components/home/Footer";
 import GameSection from "@/components/home/GameSection";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
-import { useTheme } from "@/context/ThemeContext";
+import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import PwaInstallBanner from "@/components/PwaInstallBanner"; // ✅ novo banner
 import BottomNav from "@/components/home/BottomNav";
@@ -167,12 +167,17 @@ const jogosNovos = [
 ];
 
 export default function Page() {
-  const theme = useTheme();
+  const { configCassino, loadingConfigCassino } = useConfigCassino();
+  const tema = configCassino?.tema;
+
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
+
+  // Se ainda estiver carregando ou não veio nada, retorna null
+  if (loadingConfigCassino || !configCassino) return null;
   return (
     <div
-      style={{ backgroundColor: theme?.cor_fundo || "#18181B" }}
+      style={{ backgroundColor: tema?.cor_fundo || "#18181B" }}
       className="min-h-screen flex flex-col text-white"
     >
       {/* BANNER FIXO ACIMA DO HEADER */}

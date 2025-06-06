@@ -2,16 +2,16 @@
 
 import { AuthProvider } from "@/context/AuthContext";
 import { DadosJogadorProvider } from "@/context/DadosJogadorContext";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ConfigCassinoProvider } from "@/context/ConfigCassinoContext";
 
 export function Providers({ children }) {
   return (
     <AuthProvider>
-      <ThemeProvider>
+      <ConfigCassinoProvider>
         <DadosJogadorProvider>
           {children}
         </DadosJogadorProvider>
-      </ThemeProvider>
+      </ConfigCassinoProvider>
     </AuthProvider>
   );
 }
