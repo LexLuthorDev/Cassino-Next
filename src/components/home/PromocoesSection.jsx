@@ -27,7 +27,7 @@ export default function PromocoesSection() {
   if (loadingConfigCassino || !configCassino) return null;
 
   return (
-    <section className="container mx-auto px-1 py-3 sm:py-2 pr-2 pl-2">
+    <section className="container mx-auto px-1 py-0 sm:py-2 pr-2 pl-2">
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <span style={{ backgroundColor: tema?.cor_tercearia, color: tema?.cor_texto_dark}} className="text-sm px-1 py-1 rounded-[5px]">

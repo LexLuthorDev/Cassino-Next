@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/home/Header";
 import BannerSection from "@/components/home/BannerSection";
+import MaioresGanhadoresSection from "@/components/home/MaioresGanhadoresSection";
 import SearchAndCategories from "@/components/home/SearchAndCategories";
 import PromocoesSection from "@/components/home/PromocoesSection";
 import Footer from "@/components/home/Footer";
@@ -192,6 +193,9 @@ export default function Page() {
       <main className="flex-1 mt-10">
         {/* Seção de Banner */}
         <BannerSection />
+
+        {/* Seção deMaiores Ganhadores */}
+        <MaioresGanhadoresSection/>
 
         {/* Seção de Promoções */}
         <PromocoesSection />
