@@ -64,7 +64,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: Users,
       label: "Indique e Ganhe",
-      bgColor: "#22C55E",
+      bgColor: tema?.cor_primaria,
       textColor: "#FFFFFF",
       badge: "💸 Banca Grátis!",
       is_span: false,
@@ -80,7 +80,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: Target,
       label: "Missões",
-      bgColor: "#22C55E",
+      bgColor: tema?.cor_primaria,
       textColor: "#FFFFFF",
       notification: 2,
       is_span: false,
@@ -96,7 +96,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: Globe,
       label: "Alterar Idioma",
-      bgColor: "#22C55E",
+      bgColor: tema?.cor_primaria,
       textColor: "#FFFFFF",
       is_span: false,
     },
@@ -110,7 +110,7 @@ export default function Header({ offsetTop = 0 }) {
     {
       icon: UserPlus,
       label: "Quero me Afiliar!",
-      bgColor: "#22C55E",
+      bgColor: tema?.cor_primaria,
       textColor: "#FFFFFF",
       is_span: false,
     },
@@ -292,7 +292,7 @@ export default function Header({ offsetTop = 0 }) {
             <div className="relative w-full">
               <button
                 className="w-full flex flex-col items-center justify-center gap-2 py-5 px-0 rounded-md font-medium text-sm transition-opacity hover:opacity-90"
-                style={{ backgroundColor: "#22C55E", color: "#FFFFFF" }}
+                style={{ backgroundColor: tema?.cor_primaria, color: tema?.cor_texto_primaria }}
               >
                 <DollarSign className="w-4 h-4" />
                 Sacar
@@ -314,7 +314,7 @@ export default function Header({ offsetTop = 0 }) {
             <div className="relative w-full">
               <button
                 className="w-full flex flex-col items-center justify-center gap-2 py-5 px-0 rounded-md font-medium text-sm transition-opacity hover:opacity-90"
-                style={{ backgroundColor: "#6B7280", color: "#FFFFFF" }}
+                style={{ backgroundColor: tema?.bg_secundario, color: tema?.cor_texto_primaria }}
               >
                 <CreditCard className="w-4 h-4" />
                 Depositar
@@ -347,7 +347,7 @@ export default function Header({ offsetTop = 0 }) {
                   }}
                 >
                   {item.is_span ? (
-                    <span className="flex bg-green-500 p-1 rounded-md items-center justify-center">
+                    <span style={{ backgroundColor: tema?.cor_primaria }} className="flex  p-1 rounded-md items-center justify-center">
                       <item.icon className="w-5 h-5" />
                     </span>
                   ) : (
