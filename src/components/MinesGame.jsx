@@ -91,7 +91,7 @@ const MinesGame = ({ token_jogador }) => {
 
   useEffect(() => {
     // Create socket inside effect
-    socketRef.current = io("https://56bc-45-160-88-131.ngrok-free.app", {
+    socketRef.current = io("https://830c-45-160-88-131.ngrok-free.app", {
       transports: ["websocket"],
       auth: {
         token: token_jogador, // Certifique-se de passar o mesmo token usado na outra página
