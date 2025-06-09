@@ -15,7 +15,7 @@ export function ConfigCassinoProvider({ children }) {
       try {
         //const origin = window.location.origin;
         const res = await getConfigCassino();
-        //console.log("Resposta:", res);
+        console.log("Resposta:", res);
         setConfigCassino (res.data); // Exemplo: { corPrimaria: "#FF0000", fonte: "Arial", ... }
       } catch (error) {
         console.error("Erro ao buscar configCassino:", error);
