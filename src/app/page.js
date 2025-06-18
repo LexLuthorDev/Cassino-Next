@@ -10,9 +10,36 @@ import Footer from "@/components/home/Footer";
 import GameSection from "@/components/home/GameSection";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { useConfigCassino } from "@/context/ConfigCassinoContext";
+import { useAuth } from "@/context/AuthContext";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import PwaInstallBanner from "@/components/PwaInstallBanner"; // ✅ novo banner
 import BottomNav from "@/components/home/BottomNav";
+import { useIdioma } from "@/context/IdiomaContext"; // Importando o hook do contexto
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+const ResgatarBonus = ({ textoConteudo, textoBotao, onClose }) => (
+  <div className="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-50 overflow-y-auto">
+    <div className="bg-zinc-950 p-4 rounded-md border border-zinc-800 max-w-xl mx-auto">
+      <div className="flex flex-col gap-4">
+        <div className="text-sm text-zinc-300 whitespace-pre-wrap break-words">
+          {textoConteudo || "Texto do conteúdo aparecerá aqui"}
+        </div>
+        <div className="flex justify-between items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20"
+            onClick={onClose}
+          >
+            {textoBotao || "Botão"}
+          </Button>
+          <X onClick={onClose} className="cursor-pointer" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 
 // ==================== DADOS MOCKADOS ====================
 
@@ -169,10 +196,37 @@ const jogosNovos = [
 
 export default function Page() {
   const { configCassino, loadingConfigCassino } = useConfigCassino();
+  console.log("configCassino:", configCassino);
+  const metodoIdioma = configCassino?.cassino?.MetodosCassinos?.find(
+    (metodo) => metodo?.nome?.toLowerCase() === "idioma"
+  );
+
+  const textoConteudoMetodoIdioma =
+    metodoIdioma?.configIdioma?.texto_conteudo ?? "Texto padrão para idioma";
+  const textoBotaoMetodoIdioma =
+    metodoIdioma?.configIdioma?.texto_botao ?? "Botão padrão para idioma";
   const tema = configCassino?.tema;
+
+  const { idioma } = useIdioma();
+
+  const { isAuthenticated, logout } = useAuth();
+
+  const [mostrarBonus, setMostrarBonus] = useState(false);
 
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
+
+  // Lógica para mostrar o bônus caso o idioma seja diferente de pt-br
+  useEffect(() => {
+    if (idioma !== "pt-BR") {
+      console.log("Idioma diferente de pt-BR, exibindo bônus");
+      setMostrarBonus(true); // Exibe o bônus
+    }
+  }, [idioma]);
+
+  const handleCloseBonus = () => {
+    setMostrarBonus(false); // Fecha o bônus
+  };
 
   // Se ainda estiver carregando ou não veio nada, retorna null
   if (loadingConfigCassino || !configCassino) return null;
@@ -195,7 +249,7 @@ export default function Page() {
         <BannerSection />
 
         {/* Seção deMaiores Ganhadores */}
-        <MaioresGanhadoresSection/>
+        <MaioresGanhadoresSection />
 
         {/* Seção de Promoções */}
         <PromocoesSection />
@@ -219,6 +273,15 @@ export default function Page() {
       <ScrollToTopButton />
 
       <BottomNav />
+
+      {/* Mostrar o componente de bônus se o idioma for diferente de pt-br */}
+      {mostrarBonus && isAuthenticated && (
+        <ResgatarBonus
+          textoConteudo={textoConteudoMetodoIdioma}
+          textoBotao={textoBotaoMetodoIdioma}
+          onClose={handleCloseBonus}
+        />
+      )}
     </div>
   );
 }

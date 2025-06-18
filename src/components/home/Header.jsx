@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useDadosJogador } from "@/context/DadosJogadorContext";
 import { useConfigCassino } from "@/context/ConfigCassinoContext";
+import { useIdioma } from "@/context/IdiomaContext"; // Importando o hook do contexto
+
 import {
   Gift,
   Menu,
@@ -28,6 +30,7 @@ export default function Header({ offsetTop = 0 }) {
     usePwaInstallPrompt();
 
   const router = useRouter();
+  const { idioma, setIdioma } = useIdioma();
   const { dadosJogador, loading, getDadosJogadorData } = useDadosJogador();
   const saldoJogador = dadosJogador?.usuario?.jogador?.saldo_total ?? 0;
   const { isAuthenticated, logout } = useAuth();
@@ -59,13 +62,10 @@ export default function Header({ offsetTop = 0 }) {
   };
 
   const handleSelectIdioma = (idioma) => {
-    console.log("Idioma selecionado:", idioma);
-    // Aqui você pode fazer o que quiser com o idioma, por exemplo:
-    // - Salvar no contexto
-    // - Redirecionar
-    // - Chamar API
-    setMostrarComponenteIdioma(false); // Fecha o modal
-  };
+  console.log("Idioma selecionado:", idioma);
+  setIdioma(idioma); // Atualiza o idioma no contexto
+  setMostrarComponenteIdioma(false); // Fecha o modal
+};
 
   // Itens do menu lateral
   const menuItems = [
