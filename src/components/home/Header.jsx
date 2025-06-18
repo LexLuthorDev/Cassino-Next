@@ -19,6 +19,7 @@ import {
   UserPlus,
   Headphones,
   X,
+  EarthLock,
 } from "lucide-react";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import { Button } from "../ui/button";
@@ -200,7 +201,10 @@ export default function Header({ offsetTop = 0 }) {
                     {loading ? (
                       <span className="mt-1 h-4 w-16 bg-zinc-700 animate-pulse rounded"></span>
                     ) : (
-                      <span className="font-bold">{saldoJogador}</span>
+                      <span className="font-bold">{saldoJogador.toLocaleString(
+                        "pt-BR",
+                        { style: "currency", currency: "BRL" }
+                      )}</span>
                     )}
                   </span>
                 </div>
@@ -463,19 +467,7 @@ export default function Header({ offsetTop = 0 }) {
             {/* Ícone */}
             <div className="mb-6 flex justify-center">
               <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
-                  />
-                </svg>
+                <EarthLock className="w-12 h-12" />
               </div>
             </div>
 
@@ -523,9 +515,9 @@ export default function Header({ offsetTop = 0 }) {
                     />
                     <div className="text-center">
                       <p className="font-semibold text-blue-800 text-sm">
-                        English
+                        Árabe
                       </p>
-                      <p className="text-xs text-blue-600">United States</p>
+                      <p className="text-xs text-blue-600">Arábia Saudita</p>
                     </div>
                   </div>
                 </button>
