@@ -21,7 +21,7 @@ import {
   X,
 } from "lucide-react";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
-
+import { Button } from "../ui/button";
 export default function Header({ offsetTop = 0 }) {
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
@@ -33,13 +33,12 @@ export default function Header({ offsetTop = 0 }) {
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
 
   const { configCassino, loadingConfigCassino } = useConfigCassino();
-
-  
+  const [mostrarComponenteIdioma, setMostrarComponenteIdioma] = useState(false);
 
   const tema = configCassino?.tema;
   const cassino = configCassino?.cassino;
   const logoCassino = cassino?.ImagensCassinos?.find((img) => img.tipo === 4);
-  
+
   const metodoIdiomaAtivo = cassino?.MetodosCassinos?.some(
     (m) => m.nome === "idioma" && m.status
   );
@@ -47,7 +46,7 @@ export default function Header({ offsetTop = 0 }) {
   const metodoVipAtivo = cassino?.MetodosCassinos?.some(
     (m) => m.nome === "vip" && m.status
   );
-  
+
   const urlLogoCassino = logoCassino ? logoCassino.url : "";
 
   const irParaLogin = () => router.push("/login");
@@ -58,90 +57,98 @@ export default function Header({ offsetTop = 0 }) {
     router.push("/");
   };
 
+  const handleSelectIdioma = (idioma) => {
+    console.log("Idioma selecionado:", idioma);
+    // Aqui você pode fazer o que quiser com o idioma, por exemplo:
+    // - Salvar no contexto
+    // - Redirecionar
+    // - Chamar API
+    setMostrarComponenteIdioma(false); // Fecha o modal
+  };
+
   // Itens do menu lateral
   const menuItems = [
-  {
-    icon: DollarSign,
-    label: "Sacar",
-    bgColor: "#22C55E",
-    textColor: "#FFFFFF",
-  },
-  {
-    icon: CreditCard,
-    label: "Depositar",
-    bgColor: "#000000",
-    textColor: "#FFFFFF",
-  },
-  {
-    icon: Users,
-    label: "Indique e Ganhe",
-    bgColor: tema?.cor_primaria,
-    textColor: "#FFFFFF",
-    badge: "💸 Banca Grátis!",
-    is_span: false,
-  },
-  {
-    icon: Gift,
-    label: "Presentes",
-    bgColor: tema?.bg_secundario,
-    textColor: "#FFFFFF",
-    badge: "🎁 Coletar agora!",
-    is_span: true,
-  },
-  {
-    icon: Target,
-    label: "Missões",
-    bgColor: tema?.cor_primaria,
-    textColor: "#FFFFFF",
-    notification: 2,
-    is_span: false,
-  },
-  {
-    icon: MessageCircle,
-    label: "Mensagens!",
-    bgColor: tema?.bg_secundario,
-    textColor: "#FFFFFF",
-    notification: 3,
-    is_span: true,
-  },
-  ...(metodoIdiomaAtivo
-    ? [
-        {
-          icon: Globe,
-          label: "Alterar Idioma",
-          bgColor: tema?.cor_primaria,
-          textColor: "#FFFFFF",
-          is_span: false,
-        },
-      ]
-    : []),
-  ...(metodoVipAtivo
-    ? [
-        {
-          icon: Crown,
-          label: "Quero ser VIP!",
-          bgColor: "#EAB308",
-          textColor: "#000000",
-          is_span: false,
-        },
-      ]
-    : []),
-  {
-    icon: UserPlus,
-    label: "Quero me Afiliar!",
-    bgColor: tema?.cor_primaria,
-    textColor: "#FFFFFF",
-    is_span: false,
-  },
-  {
-    icon: Headphones,
-    label: "Suporte (24h)",
-    bgColor: tema?.bg_secundario,
-    textColor: "#FFFFFF",
-    is_span: true,
-  },
-];
-
+    {
+      icon: DollarSign,
+      label: "Sacar",
+      bgColor: "#22C55E",
+      textColor: "#FFFFFF",
+    },
+    {
+      icon: CreditCard,
+      label: "Depositar",
+      bgColor: "#000000",
+      textColor: "#FFFFFF",
+    },
+    {
+      icon: Users,
+      label: "Indique e Ganhe",
+      bgColor: tema?.cor_primaria,
+      textColor: "#FFFFFF",
+      badge: "💸 Banca Grátis!",
+      is_span: false,
+    },
+    {
+      icon: Gift,
+      label: "Presentes",
+      bgColor: tema?.bg_secundario,
+      textColor: "#FFFFFF",
+      badge: "🎁 Coletar agora!",
+      is_span: true,
+    },
+    {
+      icon: Target,
+      label: "Missões",
+      bgColor: tema?.cor_primaria,
+      textColor: "#FFFFFF",
+      notification: 2,
+      is_span: false,
+    },
+    {
+      icon: MessageCircle,
+      label: "Mensagens!",
+      bgColor: tema?.bg_secundario,
+      textColor: "#FFFFFF",
+      notification: 3,
+      is_span: true,
+    },
+    ...(metodoIdiomaAtivo
+      ? [
+          {
+            icon: Globe,
+            label: "Alterar Idioma",
+            bgColor: tema?.cor_primaria,
+            textColor: "#FFFFFF",
+            is_span: false,
+          },
+        ]
+      : []),
+    ...(metodoVipAtivo
+      ? [
+          {
+            icon: Crown,
+            label: "Quero ser VIP!",
+            bgColor: "#EAB308",
+            textColor: "#000000",
+            is_span: false,
+          },
+        ]
+      : []),
+    {
+      icon: UserPlus,
+      label: "Quero me Afiliar!",
+      bgColor: tema?.cor_primaria,
+      textColor: "#FFFFFF",
+      is_span: false,
+    },
+    {
+      icon: Headphones,
+      label: "Suporte (24h)",
+      bgColor: tema?.bg_secundario,
+      textColor: "#FFFFFF",
+      is_span: true,
+    },
+  ];
 
   useEffect(() => {
     if (isAuthenticated && !dadosJogador) {
@@ -376,6 +383,12 @@ export default function Header({ offsetTop = 0 }) {
               {menuItems.slice(2).map((item, index) => (
                 <button
                   key={index}
+                  onClick={() => {
+                    if (item.label === "Alterar Idioma") {
+                      setMostrarComponenteIdioma(true);
+                      setMenuMobileAberto(false); // Fecha o menu lateral
+                    }
+                  }}
                   className={`w-full flex items-center gap-3 py-3 mb-2 rounded-md font-medium text-sm transition-opacity hover:opacity-90 relative ${
                     item.is_span == true ? "px-3" : "px-4"
                   }`}
@@ -438,6 +451,88 @@ export default function Header({ offsetTop = 0 }) {
             </div>
           </div>
         </aside>
+      )}
+
+      {mostrarComponenteIdioma && (
+        <div className="fixed inset-0 bg-gradient-to-br from-black/90 via-purple-900/20 to-black/90 z-[60] flex flex-col items-center justify-center backdrop-blur-sm">
+          {/* Background decorativo */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_50%)]" />
+
+          {/* Conteúdo principal */}
+          <div className="relative z-10 text-center">
+            {/* Ícone */}
+            <div className="mb-6 flex justify-center">
+              <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Título */}
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+              Escolha seu idioma
+            </h1>
+            <p className="text-gray-300 mb-8 text-lg">
+              Selecione o idioma de sua preferência
+            </p>
+
+            {/* Opções de idioma */}
+            <div className="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl max-w-md mx-auto">
+              <div className="flex gap-4 justify-center">
+                {/* Português */}
+                <button
+                  onClick={() => handleSelectIdioma("pt-BR")}
+                  className="group relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <div className="relative p-4 bg-gradient-to-br from-green-50 to-yellow-50 rounded-xl border-2 border-green-200 group-hover:border-green-400 transition-all duration-300">
+                    <img
+                      src="https://brx1.bet/public/images/brasil.png"
+                      alt="Português (Brasil)"
+                      className="w-20 h-16 object-cover rounded-lg shadow-md mb-3"
+                    />
+                    <div className="text-center">
+                      <p className="font-semibold text-green-800 text-sm">
+                        Português
+                      </p>
+                      <p className="text-xs text-green-600">Brasil</p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* English */}
+                <button
+                  onClick={() => handleSelectIdioma("en-US")}
+                  className="group relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <div className="relative p-4 bg-gradient-to-br from-blue-50 to-red-50 rounded-xl border-2 border-blue-200 group-hover:border-blue-400 transition-all duration-300">
+                    <img
+                      src="https://romancebet.site/public/uploads/78917052025010128.jpeg"
+                      alt="English"
+                      className="w-20 h-16 object-cover rounded-lg shadow-md mb-3"
+                    />
+                    <div className="text-center">
+                      <p className="font-semibold text-blue-800 text-sm">
+                        English
+                      </p>
+                      <p className="text-xs text-blue-600">United States</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
