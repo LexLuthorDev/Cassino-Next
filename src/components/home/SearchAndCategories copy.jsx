@@ -17,7 +17,8 @@ const categoriaJogos = [
 
 export default function SearchAndCategories() {
   const { configCassino, loadingConfigCassino } = useConfigCassino();
-  
+  const cassinoMetodoIdioma = configCassino?.cassino?.MetodosCassinos.map((metodo) => metodo.nome === "idioma" && metodo.status === true)[0];
+  console.log("cassinoMetodoIdioma:", cassinoMetodoIdioma);
   
   const tema = configCassino?.tema;
   const [termoPesquisa, setTermoPesquisa] = useState("");

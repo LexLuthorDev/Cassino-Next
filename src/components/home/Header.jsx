@@ -34,9 +34,20 @@ export default function Header({ offsetTop = 0 }) {
 
   const { configCassino, loadingConfigCassino } = useConfigCassino();
 
+  
+
   const tema = configCassino?.tema;
   const cassino = configCassino?.cassino;
-  const logoCassino = cassino?.ImagensCassinos?.find(img => img.tipo === 4);
+  const logoCassino = cassino?.ImagensCassinos?.find((img) => img.tipo === 4);
+  
+  const metodoIdiomaAtivo = cassino?.MetodosCassinos?.some(
+    (m) => m.nome === "idioma" && m.status
+  );
+
+  const metodoVipAtivo = cassino?.MetodosCassinos?.some(
+    (m) => m.nome === "vip" && m.status
+  );
+  
   const urlLogoCassino = logoCassino ? logoCassino.url : "";
 
   const irParaLogin = () => router.push("/login");
@@ -49,79 +60,88 @@ export default function Header({ offsetTop = 0 }) {
 
   // Itens do menu lateral
   const menuItems = [
-    {
-      icon: DollarSign,
-      label: "Sacar",
-      bgColor: "#22C55E",
-      textColor: "#FFFFFF",
-    },
-    {
-      icon: CreditCard,
-      label: "Depositar",
-      bgColor: "#000000",
-      textColor: "#FFFFFF",
-    },
-    {
-      icon: Users,
-      label: "Indique e Ganhe",
-      bgColor: tema?.cor_primaria,
-      textColor: "#FFFFFF",
-      badge: "💸 Banca Grátis!",
-      is_span: false,
-    },
-    {
-      icon: Gift,
-      label: "Presentes",
-      bgColor: tema?.bg_secundario,
-      textColor: "#FFFFFF",
-      badge: "🎁 Coletar agora!",
-      is_span: true,
-    },
-    {
-      icon: Target,
-      label: "Missões",
-      bgColor: tema?.cor_primaria,
-      textColor: "#FFFFFF",
-      notification: 2,
-      is_span: false,
-    },
-    {
-      icon: MessageCircle,
-      label: "Mensagens!",
-      bgColor: tema?.bg_secundario,
-      textColor: "#FFFFFF",
-      notification: 3,
-      is_span: true,
-    },
-    {
-      icon: Globe,
-      label: "Alterar Idioma",
-      bgColor: tema?.cor_primaria,
-      textColor: "#FFFFFF",
-      is_span: false,
-    },
-    {
-      icon: Crown,
-      label: "Quero ser VIP!",
-      bgColor: "#EAB308",
-      textColor: "#000000",
-      is_span: false,
-    },
-    {
-      icon: UserPlus,
-      label: "Quero me Afiliar!",
-      bgColor: tema?.cor_primaria,
-      textColor: "#FFFFFF",
-      is_span: false,
-    },
-    {
-      icon: Headphones,
-      label: "Suporte (24h)",
-      bgColor: tema?.bg_secundario,
-      textColor: "#FFFFFF",
-      is_span: true,
-    },
-  ];
+  {
+    icon: DollarSign,
+    label: "Sacar",
+    bgColor: "#22C55E",
+    textColor: "#FFFFFF",
+  },
+  {
+    icon: CreditCard,
+    label: "Depositar",
+    bgColor: "#000000",
+    textColor: "#FFFFFF",
+  },
+  {
+    icon: Users,
+    label: "Indique e Ganhe",
+    bgColor: tema?.cor_primaria,
+    textColor: "#FFFFFF",
+    badge: "💸 Banca Grátis!",
+    is_span: false,
+  },
+  {
+    icon: Gift,
+    label: "Presentes",
+    bgColor: tema?.bg_secundario,
+    textColor: "#FFFFFF",
+    badge: "🎁 Coletar agora!",
+    is_span: true,
+  },
+  {
+    icon: Target,
+    label: "Missões",
+    bgColor: tema?.cor_primaria,
+    textColor: "#FFFFFF",
+    notification: 2,
+    is_span: false,
+  },
+  {
+    icon: MessageCircle,
+    label: "Mensagens!",
+    bgColor: tema?.bg_secundario,
+    textColor: "#FFFFFF",
+    notification: 3,
+    is_span: true,
+  },
+  ...(metodoIdiomaAtivo
+    ? [
+        {
+          icon: Globe,
+          label: "Alterar Idioma",
+          bgColor: tema?.cor_primaria,
+          textColor: "#FFFFFF",
+          is_span: false,
+        },
+      ]
+    : []),
+  ...(metodoVipAtivo
+    ? [
+        {
+          icon: Crown,
+          label: "Quero ser VIP!",
+          bgColor: "#EAB308",
+          textColor: "#000000",
+          is_span: false,
+        },
+      ]
+    : []),
+  {
+    icon: UserPlus,
+    label: "Quero me Afiliar!",
+    bgColor: tema?.cor_primaria,
+    textColor: "#FFFFFF",
+    is_span: false,
+  },
+  {
+    icon: Headphones,
+    label: "Suporte (24h)",
+    bgColor: tema?.bg_secundario,
+    textColor: "#FFFFFF",
+    is_span: true,
+  },
+];
+
 
   useEffect(() => {
     if (isAuthenticated && !dadosJogador) {
@@ -146,7 +166,7 @@ export default function Header({ offsetTop = 0 }) {
           <div className="flex items-center">
             <a href="/" className="flex items-center">
               <img
-                //src="/assets/logo.svg" 
+                //src="/assets/logo.svg"
                 src={urlLogoCassino}
                 alt="Logo do Cassino"
                 className=" max-w-[130px] object-contain"
@@ -217,12 +237,21 @@ export default function Header({ offsetTop = 0 }) {
                 <div className="relative">
                   <button
                     onClick={irParaCadastro}
-                    style={{ backgroundColor: tema?.cor_primaria, color: tema?.cor_texto_primaria }}
+                    style={{
+                      backgroundColor: tema?.cor_primaria,
+                      color: tema?.cor_texto_primaria,
+                    }}
                     className="px-4 py-1 rounded-full border border-transparent   font-medium cursor-pointer transition-all duration-200"
                   >
                     Registre-se
                   </button>
-                  <span style={{ backgroundColor: tema?.cor_tercearia, color: tema?.cor_texto_dark }} className="absolute -top-3 -right-0  text-black text-xs font-bold px-3 py-0.5 rounded-full transform rotate-1">
+                  <span
+                    style={{
+                      backgroundColor: tema?.cor_tercearia,
+                      color: tema?.cor_texto_dark,
+                    }}
+                    className="absolute -top-3 -right-0  text-black text-xs font-bold px-3 py-0.5 rounded-full transform rotate-1"
+                  >
                     <img
                       src="/assets/pix.svg"
                       alt="PIX"
@@ -233,7 +262,10 @@ export default function Header({ offsetTop = 0 }) {
                 </div>
                 <button
                   onClick={irParaLogin}
-                  style={{  color: tema?.cor_texto_primaria, borderColor: tema?.cor_primaria }}
+                  style={{
+                    color: tema?.cor_texto_primaria,
+                    borderColor: tema?.cor_primaria,
+                  }}
                   className="px-4 py-1 rounded-full border    font-medium cursor-pointer transition-colors bg-[#1a1a1a]"
                 >
                   Entrar
@@ -292,7 +324,10 @@ export default function Header({ offsetTop = 0 }) {
             <div className="relative w-full">
               <button
                 className="w-full flex flex-col items-center justify-center gap-2 py-5 px-0 rounded-md font-medium text-sm transition-opacity hover:opacity-90"
-                style={{ backgroundColor: tema?.cor_primaria, color: tema?.cor_texto_primaria }}
+                style={{
+                  backgroundColor: tema?.cor_primaria,
+                  color: tema?.cor_texto_primaria,
+                }}
               >
                 <DollarSign className="w-4 h-4" />
                 Sacar
@@ -314,7 +349,10 @@ export default function Header({ offsetTop = 0 }) {
             <div className="relative w-full">
               <button
                 className="w-full flex flex-col items-center justify-center gap-2 py-5 px-0 rounded-md font-medium text-sm transition-opacity hover:opacity-90"
-                style={{ backgroundColor: tema?.bg_secundario, color: tema?.cor_texto_primaria }}
+                style={{
+                  backgroundColor: tema?.bg_secundario,
+                  color: tema?.cor_texto_primaria,
+                }}
               >
                 <CreditCard className="w-4 h-4" />
                 Depositar
@@ -347,7 +385,10 @@ export default function Header({ offsetTop = 0 }) {
                   }}
                 >
                   {item.is_span ? (
-                    <span style={{ backgroundColor: tema?.cor_primaria }} className="flex  p-1 rounded-md items-center justify-center">
+                    <span
+                      style={{ backgroundColor: tema?.cor_primaria }}
+                      className="flex  p-1 rounded-md items-center justify-center"
+                    >
                       <item.icon className="w-5 h-5" />
                     </span>
                   ) : (
