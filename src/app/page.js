@@ -17,7 +17,15 @@ import BottomNav from "@/components/home/BottomNav";
 import { useIdioma } from "@/context/IdiomaContext"; // Importando o hook do contexto
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-const ResgatarBonus = ({ textoConteudo, textoBotao, onClose }) => (
+import { getBonusMetodoIdioma } from "@/api/jogador";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner"; // <- toast vem da lib sonner diretamente
+const ResgatarBonus = ({
+  textoConteudo,
+  textoBotao,
+  onClose,
+  resgatarBonus,
+}) => (
   <div className="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-50 overflow-y-auto">
     <div className="bg-zinc-950 p-4 rounded-md border border-zinc-800 max-w-xl mx-auto">
       <div className="flex flex-col gap-4">
@@ -29,7 +37,7 @@ const ResgatarBonus = ({ textoConteudo, textoBotao, onClose }) => (
             size="sm"
             variant="outline"
             className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20"
-            onClick={onClose}
+            onClick={resgatarBonus}
           >
             {textoBotao || "Botão"}
           </Button>
@@ -39,7 +47,6 @@ const ResgatarBonus = ({ textoConteudo, textoBotao, onClose }) => (
     </div>
   </div>
 );
-
 
 // ==================== DADOS MOCKADOS ====================
 
@@ -196,7 +203,7 @@ const jogosNovos = [
 
 export default function Page() {
   const { configCassino, loadingConfigCassino } = useConfigCassino();
-  console.log("configCassino:", configCassino);
+  //console.log("configCassino:", configCassino);
   const metodoIdioma = configCassino?.cassino?.MetodosCassinos?.find(
     (metodo) => metodo?.nome?.toLowerCase() === "idioma"
   );
@@ -207,25 +214,57 @@ export default function Page() {
     metodoIdioma?.configIdioma?.texto_botao ?? "Botão padrão para idioma";
   const tema = configCassino?.tema;
 
-  const { idioma } = useIdioma();
+  const { idioma, setIdiomaState } = useIdioma();
+
+  console.log("idioma:", idioma);
 
   const { isAuthenticated, logout } = useAuth();
 
-  const [mostrarBonus, setMostrarBonus] = useState(false);
+  const [mostrarBonus, setMostrarBonus] = useState(
+    idioma?.toLowerCase() !== "pt-br"
+  );
 
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
 
   // Lógica para mostrar o bônus caso o idioma seja diferente de pt-br
   useEffect(() => {
-    if (idioma !== "pt-BR") {
-      console.log("Idioma diferente de pt-BR, exibindo bônus");
+    if (idioma !== "pt-br") {
+      //console.log("Idioma diferente de pt-BR, exibindo bônus");
       setMostrarBonus(true); // Exibe o bônus
     }
   }, [idioma]);
 
   const handleCloseBonus = () => {
     setMostrarBonus(false); // Fecha o bônus
+  };
+
+  const handleResgatarBonus = async () => {
+    //console.log("Resgatando bônus");
+    // Lógica para resgatar o bônus
+    const resposta = await getBonusMetodoIdioma();
+
+    setMostrarBonus(false);
+
+    //console.log("Resposta:", resposta);
+    const { bonus, mensagem } = resposta.data;
+
+    if (bonus === true) {
+      setIdiomaState("pt-br");
+      toast.success(mensagem, {
+        // description: mensagem,
+      });
+      // esperar 3 segundos
+      // dar um reload na pagina
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } else {
+      setIdiomaState("pt-br");
+      toast.error(mensagem, {
+        //description: mensagem,
+      });
+    }
   };
 
   // Se ainda estiver carregando ou não veio nada, retorna null
@@ -280,8 +319,12 @@ export default function Page() {
           textoConteudo={textoConteudoMetodoIdioma}
           textoBotao={textoBotaoMetodoIdioma}
           onClose={handleCloseBonus}
+          resgatarBonus={handleResgatarBonus}
         />
       )}
+
+      {/* Render do Toaster */}
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

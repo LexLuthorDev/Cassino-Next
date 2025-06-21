@@ -25,14 +25,21 @@ import {
 } from "lucide-react";
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import { Button } from "../ui/button";
+import { config } from "process";
 export default function Header({ offsetTop = 0 }) {
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
 
   const router = useRouter();
-  const { idioma, setIdioma } = useIdioma();
+  const { idioma, setIdiomaState } = useIdioma();
   const { dadosJogador, loading, getDadosJogadorData } = useDadosJogador();
+  console.log(
+    "Dados do jogador:",
+    dadosJogador?.usuario?.jogador.bonus_resgatados
+  );
+
   const saldoJogador = dadosJogador?.usuario?.jogador?.saldo_total ?? 0;
+
   const { isAuthenticated, logout } = useAuth();
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
 
@@ -47,11 +54,34 @@ export default function Header({ offsetTop = 0 }) {
     (m) => m.nome === "idioma" && m.status
   );
 
+  let bonusResgatados = dadosJogador?.usuario?.jogador?.bonus_resgatados;
+
+  if (typeof bonusResgatados === "string") {
+    try {
+      bonusResgatados = JSON.parse(bonusResgatados);
+    } catch (err) {
+      console.error("Erro ao parsear bonus_resgatados:", err);
+      bonusResgatados = {};
+    }
+  }
+
+  const podeAlterarIdioma =
+    metodoIdiomaAtivo && bonusResgatados?.idioma !== true;
+  console.log("Pode alterar idioma:", podeAlterarIdioma);
+
   const metodoVipAtivo = cassino?.MetodosCassinos?.some(
     (m) => m.nome === "vip" && m.status
   );
 
   const urlLogoCassino = logoCassino ? logoCassino.url : "";
+
+  const configMetodoIdioma = cassino?.MetodosCassinos?.find(
+    (m) => m.nome === "idioma"
+  );
+
+  const pais_idioma = configMetodoIdioma?.configIdioma?.pais_idioma ?? "";
+  const lingua_idioma = configMetodoIdioma?.configIdioma?.lingua_idioma ?? "";
+  const img_bandeira = configMetodoIdioma?.configIdioma?.img_bandeira ?? "";
 
   const irParaLogin = () => router.push("/login");
   const irParaCadastro = () => router.push("/cadastro");
@@ -62,10 +92,10 @@ export default function Header({ offsetTop = 0 }) {
   };
 
   const handleSelectIdioma = (idioma) => {
-  console.log("Idioma selecionado:", idioma);
-  setIdioma(idioma); // Atualiza o idioma no contexto
-  setMostrarComponenteIdioma(false); // Fecha o modal
-};
+    //console.log("Idioma selecionado:", idioma);
+    setIdiomaState(idioma); // Atualiza o idioma no contexto
+    setMostrarComponenteIdioma(false); // Fecha o modal
+  };
 
   // Itens do menu lateral
   const menuItems = [
@@ -113,7 +143,7 @@ export default function Header({ offsetTop = 0 }) {
       notification: 3,
       is_span: true,
     },
-    ...(metodoIdiomaAtivo
+    ...(podeAlterarIdioma
       ? [
           {
             icon: Globe,
@@ -124,6 +154,7 @@ export default function Header({ offsetTop = 0 }) {
           },
         ]
       : []),
+
     ...(metodoVipAtivo
       ? [
           {
@@ -201,10 +232,12 @@ export default function Header({ offsetTop = 0 }) {
                     {loading ? (
                       <span className="mt-1 h-4 w-16 bg-zinc-700 animate-pulse rounded"></span>
                     ) : (
-                      <span className="font-bold">{saldoJogador.toLocaleString(
-                        "pt-BR",
-                        { style: "currency", currency: "BRL" }
-                      )}</span>
+                      <span className="font-bold">
+                        {saldoJogador.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
                     )}
                   </span>
                 </div>
@@ -507,18 +540,16 @@ export default function Header({ offsetTop = 0 }) {
                   onClick={() => handleSelectIdioma("en-US")}
                   className="group relative overflow-hidden rounded-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <div className="relative p-4 bg-gradient-to-br from-blue-50 to-red-50 rounded-xl border-2 border-blue-200 group-hover:border-blue-400 transition-all duration-300">
+                  <div className="relative p-4 bg-gradient-to-br from-blue-50 to-red-50 rounded-xl border-2 border-blue-200 group-hover:border-blue-400 transition-all duration-300 flex flex-col items-center justify-center text-center">
                     <img
-                      src="https://romancebet.site/public/uploads/78917052025010128.jpeg"
-                      alt="English"
+                      src={img_bandeira}
+                      alt={lingua_idioma}
                       className="w-20 h-16 object-cover rounded-lg shadow-md mb-3"
                     />
-                    <div className="text-center">
-                      <p className="font-semibold text-blue-800 text-sm">
-                        Árabe
-                      </p>
-                      <p className="text-xs text-blue-600">Arábia Saudita</p>
-                    </div>
+                    <p className="font-semibold text-blue-800 text-sm">
+                      {pais_idioma}
+                    </p>
+                    <p className="text-xs text-blue-600">{lingua_idioma}</p>
                   </div>
                 </button>
               </div>
