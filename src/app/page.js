@@ -260,10 +260,14 @@ export default function Page() {
         window.location.reload();
       }, 3000);
     } else {
-      setIdiomaState("pt-br");
+      //setIdiomaState("pt-br");
       toast.error(mensagem, {
         //description: mensagem,
       });
+      // dar um reload na pagina
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     }
   };
 
