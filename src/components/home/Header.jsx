@@ -26,6 +26,8 @@ import {
 import usePwaInstallPrompt from "@/hooks/usePwaInstallPrompt";
 import { Button } from "../ui/button";
 import { config } from "process";
+import ModalDeposito from "../ModalDeposito";
+import depositoAPI from "@/api/deposito";
 export default function Header({ offsetTop = 0 }) {
   const { showInstallModal, triggerInstall, setShowInstallModal } =
     usePwaInstallPrompt();
@@ -45,6 +47,7 @@ export default function Header({ offsetTop = 0 }) {
 
   const { configCassino, loadingConfigCassino } = useConfigCassino();
   const [mostrarComponenteIdioma, setMostrarComponenteIdioma] = useState(false);
+  const [mostrarModalDeposito, setMostrarModalDeposito] = useState(false);
 
   const tema = configCassino?.tema;
   const cassino = configCassino?.cassino;
@@ -95,6 +98,33 @@ export default function Header({ offsetTop = 0 }) {
     //console.log("Idioma selecionado:", idioma);
     setIdiomaState(idioma); // Atualiza o idioma no contexto
     setMostrarComponenteIdioma(false); // Fecha o modal
+  };
+
+  const handleDepositar = async (dadosDeposito) => {
+    try {
+      console.log("Processando depósito:", dadosDeposito);
+      
+      // Chamar a API para criar o depósito
+      const response = await depositoAPI.criarDeposito(dadosDeposito);
+      
+      if (response.success) {
+        // Depósito criado com sucesso
+        console.log("Depósito criado:", response.data);
+        
+        // Recarregar dados do jogador para atualizar o saldo
+        if (getDadosJogadorData) {
+          getDadosJogadorData();
+        }
+        
+        // Retornar a resposta para o modal processar
+        return response;
+      }
+         } catch (error) {
+       console.error("Erro ao criar depósito:", error);
+       
+       // Re-throw para o modal tratar (não mostrar alert aqui)
+       throw error;
+     }
   };
 
   // Itens do menu lateral
@@ -392,6 +422,7 @@ export default function Header({ offsetTop = 0 }) {
             {/* Botão Depositar */}
             <div className="relative w-full">
               <button
+                onClick={() => setMostrarModalDeposito(true)}
                 className="w-full flex flex-col items-center justify-center gap-2 py-5 px-0 rounded-md font-medium text-sm transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: tema?.bg_secundario,
@@ -557,6 +588,13 @@ export default function Header({ offsetTop = 0 }) {
           </div>
         </div>
       )}
+
+      {/* Modal de Depósito */}
+      <ModalDeposito
+        visible={mostrarModalDeposito}
+        onClose={() => setMostrarModalDeposito(false)}
+        onDepositar={handleDepositar}
+      />
     </>
   );
 }
