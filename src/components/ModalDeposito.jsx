@@ -67,10 +67,23 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
       
       // Tocar som de dinheiro/vitória
       try {
+        console.log('🔊 [ModalDeposito] Tentando tocar som de sucesso...');
         const audio = new Audio('/sounds/cashout.mp3');
         audio.volume = 0.7; // Volume 70%
-        audio.play().catch(error => {
+        
+        // Adicionar listeners para debug
+        audio.addEventListener('loadstart', () => console.log('🔊 [ModalDeposito] Áudio: Iniciando carregamento'));
+        audio.addEventListener('canplay', () => console.log('🔊 [ModalDeposito] Áudio: Pronto para tocar'));
+        audio.addEventListener('play', () => console.log('🔊 [ModalDeposito] Áudio: Iniciando reprodução'));
+        audio.addEventListener('ended', () => console.log('🔊 [ModalDeposito] Áudio: Reprodução finalizada'));
+        audio.addEventListener('error', (e) => console.error('🔊 [ModalDeposito] Áudio: Erro no carregamento', e));
+        
+        audio.play().then(() => {
+          console.log('✅ [ModalDeposito] Som tocado com sucesso');
+        }).catch(error => {
           console.log('🔇 [ModalDeposito] Não foi possível tocar o som:', error);
+          console.log('🔇 [ModalDeposito] Tipo do erro:', error.name);
+          console.log('🔇 [ModalDeposito] Mensagem do erro:', error.message);
         });
       } catch (error) {
         console.log('🔇 [ModalDeposito] Erro ao criar áudio:', error);

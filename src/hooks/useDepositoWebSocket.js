@@ -69,6 +69,20 @@ export const useDepositoWebSocket = (depositoId, usuarioId) => {
         console.log('✅ [useDepositoWebSocket] Evento customizado disparado');
       });
 
+      // FALLBACK: Evento global de pagamento aprovado
+      socketRef.current.on('deposito:pagamento_aprovado_global', (data) => {
+        console.log('🌍 [useDepositoWebSocket] ===== PAGAMENTO APROVADO GLOBAL =====');
+        console.log('📊 [useDepositoWebSocket] Dados do pagamento aprovado global:', data);
+        
+        // Verificar se é para este depósito
+        if (data.depositoId == depositoId) {
+          console.log('✅ [useDepositoWebSocket] Evento global corresponde a este depósito');
+          window.dispatchEvent(new CustomEvent('deposito:pagamento_aprovado', { detail: data }));
+        } else {
+          console.log('❌ [useDepositoWebSocket] Evento global não corresponde a este depósito');
+        }
+      });
+
       socketRef.current.on('deposito:pagamento_rejeitado', (data) => {
         console.log('❌ [useDepositoWebSocket] ===== PAGAMENTO REJEITADO =====');
         console.log('📊 [useDepositoWebSocket] Dados do pagamento rejeitado:', data);
