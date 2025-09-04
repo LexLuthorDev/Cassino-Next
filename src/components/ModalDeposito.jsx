@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, CreditCard, Coins, Plus, Clipboard } from "lucide-react";
+import { X, CreditCard, Coins, Plus, Clipboard, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useConfigCassino } from "@/context/ConfigCassinoContext";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import StatusPixRealTime from "./StatusPixRealTime";
 import QRCode from "qrcode";
+import { useDepositoWebSocket } from "@/hooks/useDepositoWebSocket";
 
 export default function ModalDeposito({ visible, onClose, onDepositar }) {
   const { configCassino } = useConfigCassino();
@@ -18,25 +19,122 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
   const [statusAtual, setStatusAtual] = useState(null);
   const [error, setError] = useState(null);
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
+  const [pagamentoAprovado, setPagamentoAprovado] = useState(false);
+  const [pagamentoData, setPagamentoData] = useState(null);
 
   const tema = configCassino?.tema;
 
-  // Gerar QR Code quando o depósito for criado
+    // Gerar QR Code quando o depósito for criado
   useEffect(() => {
     if (depositoCriado?.pixup?.qrCodeText) {
       gerarQRCode(depositoCriado.pixup.qrCodeText);
     }
     
-         // Debug: Verificar dados recebidos
-     if (depositoCriado) {
-       console.log("🔍 [ModalDeposito] Dados do depósito:", {
-         valor: depositoCriado.valor,
-         pixup: depositoCriado.pixup,
-         valor_alternativo: depositoCriado.pixup?.amount,
-         valor_final: depositoCriado.valor || depositoCriado.pixup?.amount || '0.00'
-       });
-     }
+    // Debug: Verificar dados recebidos
+    if (depositoCriado) {
+      console.log("🔍 [ModalDeposito] Dados completos do depósito:", depositoCriado);
+      console.log("🔍 [ModalDeposito] ID do depósito:", depositoCriado.id);
+      console.log("🔍 [ModalDeposito] Dados do depósito:", {
+        id: depositoCriado.id,
+        valor: depositoCriado.valor,
+        pixup: depositoCriado.pixup,
+        valor_alternativo: depositoCriado.pixup?.amount,
+        valor_final: depositoCriado.valor || depositoCriado.pixup?.amount || '0.00'
+      });
+    }
   }, [depositoCriado]);
+
+  // WebSocket para depósitos
+  const { isConnected } = useDepositoWebSocket(
+    depositoCriado?.id, 
+    depositoCriado?.id_usuario || 25 // Placeholder - você deve pegar o ID real do usuário
+  );
+
+  console.log("🔌 [ModalDeposito] Status da conexão WebSocket:", isConnected);
+  console.log("📊 [ModalDeposito] Dados do depósito para WebSocket:", {
+    depositoId: depositoCriado?.id,
+    usuarioId: depositoCriado?.id_usuario || 25
+  });
+
+  // Escutar eventos de pagamento
+  useEffect(() => {
+    console.log("🎧 [ModalDeposito] Configurando listeners de eventos WebSocket...");
+    
+    const handlePagamentoAprovado = (event) => {
+      const data = event.detail;
+      console.log('🎉 [ModalDeposito] ===== PAGAMENTO APROVADO RECEBIDO =====');
+      console.log('📊 [ModalDeposito] Dados do pagamento aprovado:', data);
+      
+      // Tocar som de dinheiro/vitória
+      try {
+        const audio = new Audio('/sounds/cashout.mp3');
+        audio.volume = 0.7; // Volume 70%
+        audio.play().catch(error => {
+          console.log('🔇 [ModalDeposito] Não foi possível tocar o som:', error);
+        });
+      } catch (error) {
+        console.log('🔇 [ModalDeposito] Erro ao criar áudio:', error);
+      }
+      
+      setPagamentoAprovado(true);
+      setPagamentoData(data);
+      console.log('✅ [ModalDeposito] Estado atualizado para pagamento aprovado');
+      
+      // Fechar modal e menu após 3 segundos
+      setTimeout(() => {
+        // Fechar modal
+        onClose();
+        resetarModal();
+        
+        // Fechar menu lateral se estiver aberto (disparar evento personalizado)
+        window.dispatchEvent(new CustomEvent('fecharMenuLateral'));
+        // darum reload da pagina
+        window.location.reload();
+      }, 8000);
+    };
+
+    const handlePagamentoRejeitado = (event) => {
+      const data = event.detail;
+      console.log('❌ [ModalDeposito] ===== PAGAMENTO REJEITADO RECEBIDO =====');
+      console.log('📊 [ModalDeposito] Dados do pagamento rejeitado:', data);
+      
+      setError({
+        type: "pagamento_rejeitado",
+        title: "Pagamento Rejeitado",
+        message: data.motivo || "Seu pagamento foi rejeitado. Tente novamente.",
+        icon: "❌"
+      });
+    };
+
+    const handlePagamentoExpirado = (event) => {
+      const data = event.detail;
+      console.log('⏰ [ModalDeposito] ===== PAGAMENTO EXPIRADO RECEBIDO =====');
+      console.log('📊 [ModalDeposito] Dados do pagamento expirado:', data);
+      
+      setError({
+        type: "pagamento_expirado",
+        title: "Pagamento Expirado",
+        message: "O tempo para pagamento expirou. Crie um novo depósito.",
+        icon: "⏰"
+      });
+    };
+
+    // Adicionar listeners
+    console.log("🎧 [ModalDeposito] Adicionando event listeners...");
+    window.addEventListener('deposito:pagamento_aprovado', handlePagamentoAprovado);
+    window.addEventListener('deposito:pagamento_rejeitado', handlePagamentoRejeitado);
+    window.addEventListener('deposito:pagamento_expirado', handlePagamentoExpirado);
+    console.log("✅ [ModalDeposito] Event listeners adicionados");
+
+    // Cleanup
+    return () => {
+      console.log("🧹 [ModalDeposito] Removendo event listeners...");
+      window.removeEventListener('deposito:pagamento_aprovado', handlePagamentoAprovado);
+      window.removeEventListener('deposito:pagamento_rejeitado', handlePagamentoRejeitado);
+      window.removeEventListener('deposito:pagamento_expirado', handlePagamentoExpirado);
+      console.log("✅ [ModalDeposito] Event listeners removidos");
+    };
+  }, [onClose]);
 
   if (!visible) return null;
 
@@ -165,11 +263,12 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
          <div className="flex justify-between items-center mb-4 sm:mb-6">
            <div className="text-center flex-1">
              <p className="text-gray-300 text-xs sm:text-sm">
-               {depositoCriado ? 'Pague com PIX' : 'Falta pouco para a diversão!'}
+               {pagamentoAprovado ? '🎉 Pagamento Aprovado!' : 
+                depositoCriado ? 'Pague com PIX' : 'Falta pouco para a diversão!'}
              </p>
            </div>
            <button
-             onClick={depositoCriado ? resetarModal : onClose}
+             onClick={pagamentoAprovado ? onClose : (depositoCriado ? resetarModal : onClose)}
              className="ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
            >
              <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -177,7 +276,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
          </div>
 
                  {/* Seleção de Método de Pagamento - Esconder quando QR Code estiver visível */}
-         {!depositoCriado && (
+         {!pagamentoAprovado && !depositoCriado && (
            <div 
              className="backdrop-blur-xl p-4 sm:p-6 rounded-xl sm:rounded-2xl border shadow-2xl mb-4 sm:mb-6"
              style={{
@@ -367,8 +466,49 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
           </div>
         )}
 
-                 {/* Seção do QR Code PIX - Layout Compacto */}
-         {depositoCriado && depositoCriado.pixup && (
+                 {/* Tela de Pagamento Aprovado */}
+        {pagamentoAprovado && (
+          <div 
+            className="backdrop-blur-xl p-6 sm:p-8 rounded-2xl border shadow-2xl text-center"
+            style={{
+              backgroundColor: tema?.bg_card || "rgba(255, 255, 255, 0.05)",
+              borderColor: "#22C55E",
+            }}
+          >
+            <div className="mb-6">
+              {/* Animação de sucesso */}
+              <div className="mx-auto mb-4 w-20 h-20 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+                <CheckCircle className="w-12 h-12 text-white" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-green-500 mb-2">
+                🎉 Pagamento Aprovado!
+              </h3>
+              
+              <p className="text-gray-300 text-sm mb-4">
+                Seu depósito de <span className="font-bold text-green-400">
+                  R$ {pagamentoData?.valor || '0,00'}
+                </span> foi aprovado com sucesso!
+              </p>
+              
+              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-4">
+                <p className="text-green-400 text-sm font-medium">
+                  💰 Seu saldo foi atualizado automaticamente
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  Aprovado em: {new Date().toLocaleString('pt-BR')}
+                </p>
+              </div>
+              
+              <p className="text-gray-500 text-xs">
+                Esta janela será fechada automaticamente em alguns segundos...
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Seção do QR Code PIX - Layout Compacto */}
+         {!pagamentoAprovado && depositoCriado && depositoCriado.pixup && (
            <div 
              className="backdrop-blur-xl p-4 sm:p-6 rounded-2xl border shadow-2xl"
              style={{
@@ -407,13 +547,27 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
 
                              {/* Informações Essenciais */}
                <div className="mb-4">
+                 {/* Indicador de Conexão WebSocket 
+                 <div className="flex items-center justify-center mb-3">
+                   <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
+                     isConnected 
+                       ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                       : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                   }`}>
+                     <div className={`w-2 h-2 rounded-full ${
+                       isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'
+                     }`}></div>
+                     {isConnected ? 'Conectado' : 'Desconectado'}
+                   </div>
+                 </div>*/}
+
                  {/* Valor e Status em Linha */}
                  <div className="flex items-center justify-center gap-4 mb-3">
                    <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 px-3 py-2 rounded-lg border border-green-500/30">
                      <div className="text-gray-400 text-xs mb-1">Valor</div>
                      <div 
                        className="text-lg font-bold"
-                       style={{ color: tema?.cor_primaria || "#22C55E" }}
+                       style={{ color: tema?.cor_primaria || "#22C55em" }}
                      >
                        R$ {(() => {
                          // Tentar diferentes campos para o valor
@@ -434,6 +588,9 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
                        {depositoCriado.pixup?.status === 'PENDING' ? 'Aguardando Pagamento' : 
                         depositoCriado.pixup?.status === 'PAID' ? 'Pago' :
                         depositoCriado.pixup?.status === 'EXPIRED' ? 'Expirado' :
+                        depositoCriado.status === 'aprovado' ? 'Pago' :
+                        depositoCriado.status === 'expirado' ? 'Expirado' :
+                        depositoCriado.status === 'cancelado' ? 'Cancelado' :
                         'Pendente'}
                      </div>
                    </div>
@@ -469,6 +626,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
                    </div>
                  </div>
                </div>
+
             </div>
           </div>
         )}

@@ -218,6 +218,26 @@ export default function Header({ offsetTop = 0 }) {
     }
   }, [isAuthenticated]);
 
+  // Listener para fechar menu lateral e atualizar saldo quando depósito for aprovado
+  useEffect(() => {
+    const handleFecharMenuLateral = () => {
+      console.log('🎉 [Header] Fechando menu lateral após depósito aprovado');
+      setMenuMobileAberto(false);
+      
+      // Atualizar dados do jogador (saldo)
+      if (getDadosJogadorData) {
+        console.log('💰 [Header] Atualizando saldo do jogador');
+        getDadosJogadorData();
+      }
+    };
+
+    window.addEventListener('fecharMenuLateral', handleFecharMenuLateral);
+
+    return () => {
+      window.removeEventListener('fecharMenuLateral', handleFecharMenuLateral);
+    };
+  }, [getDadosJogadorData]);
+
   // Se ainda estiver carregando ou não veio nada, retorna null
   if (loadingConfigCassino || !configCassino) return null;
 
