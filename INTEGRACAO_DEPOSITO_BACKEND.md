@@ -57,7 +57,7 @@ Este documento explica como o modal de depósito do frontend se integra com o ba
   - Seleção de método de pagamento (PIX/Cartão)
   - Input de valor personalizado
   - Opções pré-definidas com bônus
-  - Validação de valor mínimo (R$ 25,00)
+  - Validação de valor mínimo (R$ 1,00)
 
 #### 3. Header Integration (`/src/components/home/Header.jsx`)
 - **Responsabilidade**: Integração do modal com a aplicação
@@ -132,14 +132,14 @@ const deposito = await Deposito.create(dadosDeposito);
 ## Validações Implementadas
 
 ### Frontend
-- **Valor mínimo**: R$ 25,00
+- **Valor mínimo**: R$ 1,00
 - **Métodos válidos**: PIX, Cartão de Crédito
 - **Campos obrigatórios**: valor, metodo
 
 ### Backend
 - **Validação de usuário**: Deve estar autenticado
 - **Validação de jogador**: Deve existir e pertencer ao cassino
-- **Validação de valor**: Mínimo R$ 25,00
+- **Validação de valor**: Mínimo R$ 1,00
 - **Validação de método**: PIX ou cartão
 
 ## Estados do Depósito
