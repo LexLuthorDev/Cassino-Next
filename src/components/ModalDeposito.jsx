@@ -152,9 +152,12 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
   if (!visible) return null;
 
   const opcoesDeposito = [
-    { valor: 30, bonus: 30 },
+    { valor: 1, bonus: 1 },
+    { valor: 5, bonus: 5 },
+    { valor: 10, bonus: 10 },
+    { valor: 20, bonus: 20 },
     { valor: 50, bonus: 50 },
-    { valor: 80, bonus: 80 },
+    { valor: 100, bonus: 100 },
   ];
 
   const handleValorSelecionado = (valor) => {

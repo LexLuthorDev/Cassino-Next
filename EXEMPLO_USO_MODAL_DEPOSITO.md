@@ -15,7 +15,7 @@ O componente `ModalDeposito` foi criado seguindo o padrão visual do projeto Cas
 - Seleção entre PIX e Cartão de Crédito
 - Campo de input para valor personalizado
 - Opções pré-definidas com bônus (R$ 30, R$ 50, R$ 80)
-- Validação de valor mínimo (R$ 25,00)
+- Validação de valor mínimo (R$ 1,00)
 - Botão de depósito desabilitado até valor válido
 
 ## Como Usar
