@@ -164,7 +164,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
 
   const handleDepositar = async () => {
     const valor = parseFloat(valorDeposito);
-    if (valor >= 25) {
+    if (valor >= 1) {
       setLoading(true);
       setError(null); // Limpar erro anterior
       
@@ -346,7 +346,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
               Depósito via {metodoPagamento === "pix" ? "PIX" : "Cartão"}
             </h3>
             <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">
-              Valor do depósito (Depósito mínimo de R$ 25,00)
+              Valor do depósito (Depósito mínimo de R$ 1,00)
             </p>
 
             {/* Campo de Input */}
@@ -362,7 +362,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
                   borderColor: tema?.cor_primaria || "#22C55E",
                   color: tema?.cor_texto_primaria || "#FFFFFF"
                 }}
-                min="25"
+                min="1"
                 step="0.01"
               />
               <div className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2">
@@ -402,7 +402,7 @@ export default function ModalDeposito({ visible, onClose, onDepositar }) {
             {/* Botão de Depósito */}
             <Button
               onClick={handleDepositar}
-              disabled={!valorDeposito || parseFloat(valorDeposito) < 25 || loading}
+              disabled={!valorDeposito || parseFloat(valorDeposito) < 1 || loading}
               className="w-full font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg text-base sm:text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: tema?.cor_primaria || "#22C55E",
