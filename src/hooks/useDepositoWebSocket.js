@@ -23,11 +23,13 @@ export const useDepositoWebSocket = (depositoId, usuarioId) => {
       console.log("🌐 [useDepositoWebSocket] URL do WebSocket:", wsUrl);
       
       socketRef.current = io(wsUrl, {
-        transports: ['polling'], // Usar apenas polling primeiro
+        transports: ['websocket', 'polling'], // Tentar websocket primeiro, depois polling
         withCredentials: true,
-        timeout: 10000,
+        timeout: 20000,
         forceNew: true,
-        autoConnect: true
+        autoConnect: true,
+        upgrade: true,
+        rememberUpgrade: true
       });
 
       // Eventos de conexão
@@ -92,6 +94,12 @@ export const useDepositoWebSocket = (depositoId, usuarioId) => {
 
       socketRef.current.on('connect_error', (error) => {
         console.error('❌ [useDepositoWebSocket] Erro de conexão:', error);
+        console.error('❌ [useDepositoWebSocket] Detalhes do erro:', {
+          message: error.message,
+          description: error.description,
+          type: error.type,
+          transport: error.transport
+        });
         isConnectedRef.current = false;
       });
 
