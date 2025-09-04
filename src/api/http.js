@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: "https://lexluthorapi.site/api", // ou IP da API
-  //baseURL: "http://localhost:3000/api",
+  //baseURL: "https://lexluthorapi.site/api", // ou IP da API
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

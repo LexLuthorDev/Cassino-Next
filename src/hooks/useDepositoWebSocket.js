@@ -14,12 +14,12 @@ export const useDepositoWebSocket = (depositoId, usuarioId) => {
       console.log("📊 [useDepositoWebSocket] Dados da conexão:", {
         depositoId,
         usuarioId,
-        url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'https://lexluthorapi.site', //'http://localhost:3000',
+        url: process.env.NEXT_PUBLIC_WEBSOCKET_URL /*|| 'https://lexluthorapi.site'*/, //'http://localhost:3000',
         jaConectado: isConnectedRef.current
       });
       
       // Conectar ao servidor WebSocket
-      const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'https://lexluthorapi.site'; //'http://localhost:3000';
+      const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL /*|| 'https://lexluthorapi.site'*/; //'http://localhost:3000';
       console.log("🌐 [useDepositoWebSocket] URL do WebSocket:", wsUrl);
       
       socketRef.current = io(wsUrl, {
